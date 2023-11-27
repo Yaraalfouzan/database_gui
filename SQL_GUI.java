@@ -107,7 +107,8 @@ public class SQL_GUI extends JFrame {
             connection = DriverManager.getConnection(url, username, password);
 
             JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } catch (ClassNotFoundException ex) {
+         } 
+        catch (ClassNotFoundException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
