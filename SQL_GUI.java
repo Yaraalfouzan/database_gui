@@ -6,6 +6,7 @@ import java.sql.*;
 
 
 public class SQL_GUI extends JFrame {
+    
     private JLabel positionLabel, idLabel;
     private JComboBox<String> positionComboBox;
     private JTextField idTextField;
