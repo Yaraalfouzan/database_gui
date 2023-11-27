@@ -241,6 +241,145 @@ private int retrievePointsFromAccount(String customerID) {
         tabbedPane.addTab("Store Manager", managerPanel);
     }
 
+    private void addNewProduct(String productID, int productQuantity, String productBrand, double price,
+    String productType, String expiryDate, String productionDate, String supplierID) {
+// Insert a new product with the provided information
+String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
+"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+try (PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
+preparedStatement.setString(1, productID);
+preparedStatement.setInt(2, productQuantity);
+preparedStatement.setString(3, productBrand);
+preparedStatement.setDouble(4, price);
+preparedStatement.setString(5, productType);
+preparedStatement.setString(6, expiryDate);
+preparedStatement.setString(7, productionDate);
+preparedStatement.setString(8, supplierID);
+
+int rowsInserted = preparedStatement.executeUpdate();
+
+if (rowsInserted > 0) {
+JOptionPane.showMessageDialog(SQL_GUI.this, "New product added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+} else {
+JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product.", "Error", JOptionPane.ERROR_MESSAGE);
+}
+} catch (SQLException ex) {
+ex.printStackTrace();
+JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+}
+}
+private void updateShift(String employeeID, String newShift) {
+    // Update the shift for the given Employee ID
+    String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
+        preparedStatement.setString(1, newShift);
+        preparedStatement.setString(2, employeeID);
+        int rowsUpdated = preparedStatement.executeUpdate();
+
+        if (rowsUpdated > 0) {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found or shift not updated.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+private void trackEmployees(String employeeID) {
+    // Fetch employee information based on the given Employee ID
+    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
+        preparedStatement.setString(1, employeeID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String employeeName = resultSet.getString("E_name");
+            String employeePhone = resultSet.getString("E_phonenum");
+            double employeeSalary = resultSet.getDouble("E_salary");
+            String employeePosition = resultSet.getString("E_Position");
+            String employeeShift = resultSet.getString("E_Shift");
+
+            // Display or use the retrieved employee information as needed
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee Info:\nName: " + employeeName +
+                    "\nPhone: " + employeePhone +
+                    "\nSalary: " + employeeSalary +
+                    "\nPosition: " + employeePosition +
+                    "\nShift: " + employeeShift, "Employee Information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+private void contactSupplier(String branchCity) {
+    // Fetch supplier information for the given branch city
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " +
+            "JOIN Product P ON S.S_ID = P.S_ID " +
+            "JOIN Branch B ON P.B_id = B.B_id " +
+            "WHERE B.city = ?";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchSupplierQuery)) {
+        preparedStatement.setString(1, branchCity);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        StringBuilder supplierInfo = new StringBuilder();
+        while (resultSet.next()) {
+            String supplierID = resultSet.getString("S_ID");
+            String supplierName = resultSet.getString("S_name");
+            String supplierPhone = resultSet.getString("S_phone");
+            String supplierLocation = resultSet.getString("S_location");
+
+            supplierInfo.append("Supplier ID: ").append(supplierID).append(", ");
+            supplierInfo.append("Name: ").append(supplierName).append(", ");
+            supplierInfo.append("Phone: ").append(supplierPhone).append(", ");
+            supplierInfo.append("Location: ").append(supplierLocation).append("\n");
+        }
+
+        if (supplierInfo.length() > 0) {
+            // Display or use the retrieved supplier information as needed
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Suppliers for Branch in " + branchCity + ":\n" + supplierInfo.toString(), "Supplier Information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "No suppliers found for the given branch city.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching supplier information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+private void showProductStock(String productID) {
+    // Fetch product information based on the given Product ID
+    String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery)) {
+        preparedStatement.setString(1, productID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String productType = resultSet.getString("P_type");
+            int productQuantity = resultSet.getInt("P_quantity");
+            String productBrand = resultSet.getString("P_brand");
+            double productPrice = resultSet.getDouble("price");
+            String expiryDate = resultSet.getString("Ex_date");
+            String productionDate = resultSet.getString("Pro_date");
+            String supplierID = resultSet.getString("S_ID");
+
+            // Display or use the retrieved product information as needed
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product Info:\nType: " + productType +
+                    "\nQuantity: " + productQuantity +
+                    "\nBrand: " + productBrand +
+                    "\nPrice: " + productPrice +
+                    "\nExpiry Date: " + expiryDate +
+                    "\nProduction Date: " + productionDate +
+                    "\nSupplier ID: " + supplierID, "Product Information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching product information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
 
 
