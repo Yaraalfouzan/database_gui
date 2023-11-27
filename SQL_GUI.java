@@ -134,8 +134,8 @@ public class SQL_GUI extends JFrame {
         JPanel cashierPanel = new JPanel();
         cashierPanel.setLayout(new FlowLayout());
 
-        generateInvoiceButton.addActionListener(new ActionListner(){
-            public void actionPreformed(ActionEvent e){
+        generateInvoiceButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
                 generateInvoice();
             }
         });
@@ -161,7 +161,8 @@ public class SQL_GUI extends JFrame {
             // Update the invoice table in the database with relevant information
 
             // Update customer points (considering 10 SR spent earns 1 point)
-            int pointsEarned = calculatePointsEarnedForInvoiceAmount(/* total invoice amount */);
+            int invoiceAmount = 100;
+            int pointsEarned = calculatePointsEarnedForInvoiceAmount(invoiceAmount);
             int updatedPoints = accountPoints + pointsEarned;
 
             // Update the customer's points in the database
@@ -180,6 +181,11 @@ public class SQL_GUI extends JFrame {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error generating invoice: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
+private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
+    // Assuming 10 SR spent earns 1 point
+    int pointsPer10SR = 1;
+    return invoiceAmount / 10 * pointsPer10SR;
 }
 
     private void showStoreManagerButtons() {
