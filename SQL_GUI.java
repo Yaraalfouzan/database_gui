@@ -6,21 +6,18 @@ import java.sql.*;
 
 
 public class SQL_GUI extends JFrame {
-<<<<<<< HEAD
-    
-=======
     //components for GUI
->>>>>>> 7b9c52b2f1265dc75147895524925d6b1403bc82
     private JLabel positionLabel, idLabel;
     private JComboBox<String> positionComboBox;
     private JTextField idTextField;
-    private JButton loginButton, updatePointsButton, generateInvoiceButton, showStockButton, contactSupplierButton, trackEmployeesButton;
+    private JButton loginButton, generateInvoiceButton, showStockButton, contactSupplierButton, trackEmployeesButton;
     private JTabbedPane tabbedPane;
     private Connection connection;
 
 
 
     public SQL_GUI() {
+
         // Set up the frame
         setTitle("Position Selection");
         setSize(600, 400); // Increased size
@@ -35,7 +32,7 @@ public class SQL_GUI extends JFrame {
         loginButton = new JButton("Log In");
 
         // Buttons for Cashier
-        updatePointsButton = new JButton("Update Points");
+       // updatePointsButton = new JButton("Update Points");
         generateInvoiceButton = new JButton("Generate Invoice");
 
         // Buttons for Store Manager
@@ -98,20 +95,27 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection
     private void initializeDatabaseConnection() {
-        // Database connection parameters
-        String url = "jdbc:mysql://127.0.0.1:3306/whatever";
+        String url = "jdbc:mariadb://127.0.0.1:3306/whatever";
         String username = "root";
         String password = "";
-
+    
         try {
+            // Load the MariaDB JDBC driver (make sure the MariaDB JDBC driver JAR is in your classpath)
+          Class.forName("org.mariadb.jdbc.Driver");
+    
             // Connect to the database
             connection = DriverManager.getConnection(url, username, password);
+
+            JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
             ex.printStackTrace();
-            // Handle database connection errors
-            JOptionPane.showMessageDialog(this, "Error connecting to the database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
     
     
     private void handlePositionActions(String position) {
@@ -139,7 +143,7 @@ public class SQL_GUI extends JFrame {
 
 
 
-
+//called by handlePositionActions
     private void showCashierButtons() {
         JPanel cashierPanel = new JPanel();
         cashierPanel.setLayout(new FlowLayout());
@@ -153,11 +157,7 @@ public class SQL_GUI extends JFrame {
 
         tabbedPane.addTab("Cashier", cashierPanel);
     }
-
-
-
-
-
+//inserting a new invoice useing selcated acc id 
     private void generateInvoice() {
     String customerID = idTextField.getText(); // Assuming the entered ID is the customer's ID
 
@@ -246,8 +246,7 @@ private int retrievePointsFromAccount(String customerID) {
         tabbedPane.addTab("Store Manager", managerPanel);
     }
 
-    private void addNewProduct(String productID, int productQuantity, String productBrand, double price,
-    String productType, String expiryDate, String productionDate, String supplierID) {
+ private void addNewProduct(String productID, int productQuantity, String productBrand, double price,String productType, String expiryDate, String productionDate, String supplierID) {
 // Insert a new product with the provided information
 String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
