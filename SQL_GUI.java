@@ -95,7 +95,7 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection
     private void initializeDatabaseConnection() {
-        String url = "jdbc:mariadb://127.0.0.1:3306/whatever";
+        String url = "jdbc:sql://127.0.0.1:3306/whatever";
         String username = "root";
         String password = "";
     
