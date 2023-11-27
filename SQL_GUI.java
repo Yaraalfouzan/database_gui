@@ -6,7 +6,11 @@ import java.sql.*;
 
 
 public class SQL_GUI extends JFrame {
+<<<<<<< HEAD
     
+=======
+    //components for GUI
+>>>>>>> 7b9c52b2f1265dc75147895524925d6b1403bc82
     private JLabel positionLabel, idLabel;
     private JComboBox<String> positionComboBox;
     private JTextField idTextField;
@@ -92,7 +96,7 @@ public class SQL_GUI extends JFrame {
         });
     }
     
-
+    //method to intialize db connection
     private void initializeDatabaseConnection() {
         // Database connection parameters
         String url = "jdbc:mysql://127.0.0.1:3306/whatever";
