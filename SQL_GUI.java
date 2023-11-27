@@ -13,6 +13,8 @@ public class SQL_GUI extends JFrame {
     private JTabbedPane tabbedPane;
     private Connection connection;
 
+
+
     public SQL_GUI() {
         // Set up the frame
         setTitle("Position Selection");
@@ -130,6 +132,9 @@ public class SQL_GUI extends JFrame {
         repaint();
     }
 
+
+
+
     private void showCashierButtons() {
         JPanel cashierPanel = new JPanel();
         cashierPanel.setLayout(new FlowLayout());
@@ -143,6 +148,11 @@ public class SQL_GUI extends JFrame {
 
         tabbedPane.addTab("Cashier", cashierPanel);
     }
+
+
+
+
+
     private void generateInvoice() {
     String customerID = idTextField.getText(); // Assuming the entered ID is the customer's ID
 
@@ -155,13 +165,24 @@ public class SQL_GUI extends JFrame {
         if (resultSet.next()) {
             String accountPhone = resultSet.getString("acc_phonenum");
             int accountPoints = resultSet.getInt("acc_points");
+            //int accountPoints = retrievePointsFromAccount(customerID);
+
 
             // Your logic to generate the invoice based on customer information
             // Fetch the purchased items and their details from the database
             // Update the invoice table in the database with relevant information
 
             // Update customer points (considering 10 SR spent earns 1 point)
-            int invoiceAmount = 100;
+             // Read invoice amount from the user
+             String invoiceAmountString = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Invoice Amount:");
+             if (invoiceAmountString == null || invoiceAmountString.isEmpty()) {
+                 // Handle case where the user cancels or enters an empty string
+                 JOptionPane.showMessageDialog(SQL_GUI.this, "Invoice generation canceled.", "Canceled", JOptionPane.INFORMATION_MESSAGE);
+                 return;
+             }
+ 
+             int invoiceAmount = Integer.parseInt(invoiceAmountString);
+ 
             int pointsEarned = calculatePointsEarnedForInvoiceAmount(invoiceAmount);
             int updatedPoints = accountPoints + pointsEarned;
 
@@ -182,11 +203,32 @@ public class SQL_GUI extends JFrame {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error generating invoice: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
 private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
     // Assuming 10 SR spent earns 1 point
     int pointsPer10SR = 1;
     return invoiceAmount / 10 * pointsPer10SR;
 }
+private int retrievePointsFromAccount(String customerID) {
+    int points = 0;
+
+    // Fetch customer points from the database
+    String fetchPointsQuery = "SELECT acc_points FROM Account WHERE userName = ?";
+    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchPointsQuery)) {
+        preparedStatement.setString(1, customerID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            points = resultSet.getInt("acc_points");
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        // Handle database query errors...
+    }
+
+    return points;
+}
+
 
     private void showStoreManagerButtons() {
         JPanel managerPanel = new JPanel();
@@ -198,6 +240,9 @@ private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
 
         tabbedPane.addTab("Store Manager", managerPanel);
     }
+
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
