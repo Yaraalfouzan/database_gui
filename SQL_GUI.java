@@ -94,16 +94,16 @@ public class SQL_GUI extends JFrame {
         });
     }
     
-    //method to intialize db connection (1)
+    //method to intialize db connection 
     private void initializeDatabaseConnection() {
-        String url = "jdbc:mysql://localhost:3306/whatever"; // Update the URL for MySQL
+        String url = "jdbc:mariadb://localhost:3306/whatever"; // Update the URL for MySQL
 
         String username = "root";
         String password = "";
     
         try {
             // Load the MariaDB JDBC driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("com.mariadb.cj.jdbc.Driver");
             // Connect to the database
             connection = DriverManager.getConnection(url, username, password);
     
