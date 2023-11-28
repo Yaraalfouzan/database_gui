@@ -12,7 +12,9 @@ public class SQL_GUI extends JFrame {
     private JButton loginButton, generateInvoiceButton, showStockButton, contactSupplierButton, trackEmployeesButton;
     private JTabbedPane tabbedPane;
     private Connection connection;
-
+///
+///
+///
 
 
     public SQL_GUI() {
