@@ -94,6 +94,7 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection (1)
     private void initializeDatabaseConnection() {
+
          String url = "jdbc:mariaDB://localhost:3306/whatever";
         String username = "root";
         String password = "";
@@ -116,44 +117,8 @@ public class SQL_GUI extends JFrame {
         }
      }
 
-    //method to intialize db connection (2)
-    public static Connection getConnection() 
-{ 
-    Connection con=null; 
-    try{ 
-    DriverManager.registerDriver(new com.mysql.jdbc.Driver()); 
-    con=DriverManager.getConnection("//url of  your database"); 
-    } 
-    catch(Exception ex) 
-    { 
-        JOptionPane.showMessageDialog(null, ex); 
-    } 
-    return con; 
-} 
-    //method to intialize db connection (3)
-// try { 
-//     // Load the MySQL JDBC driver 
-//     Class.forName("com.mysql.jdbc.Driver"); 
-
-//     // Establish a connection to the database 
-//     String url = "jdbc:mysql://localhost:3306/mydatabase"; 
-//     String username = "root"; 
-//     String password = "mypassword"; 
-//     Connection conn = DriverManager.getConnection(url, username, password); 
-
-//     // Create a statement object 
-//     Statement stmt = conn.createStatement(); 
-
-//     // Execute a query and get the results 
-//     ResultSet rs = stmt.executeQuery("SELECT * FROM mytable"); 
-
-//     // Loop through the results and display them in the console 
-//     while (rs.next()) { 
-//        int id = rs.getInt("id"); 
-//        String name = rs.getString("name"); 
-//        System.out.println("ID: " + id + ", Name: " + name); 
-//     } 
-
+   
+//do need this ???
 //     // Close the database resources 
 //     rs.close(); 
 //     stmt.close(); 
@@ -203,7 +168,8 @@ public class SQL_GUI extends JFrame {
 
         tabbedPane.addTab("Cashier", cashierPanel);
     }
-//inserting a new invoice useing selcated acc id 
+
+//1)inserting a new invoice useing selcated acc id 
     private void generateInvoice() {
     String customerID = idTextField.getText(); // Assuming the entered ID is the customer's ID
 
@@ -260,6 +226,9 @@ private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
     int pointsPer10SR = 1;
     return invoiceAmount / 10 * pointsPer10SR;
 }
+
+
+//7)retrieve points from given acc id 
 private int retrievePointsFromAccount(String customerID) {
     int points = 0;
 
@@ -292,8 +261,10 @@ private int retrievePointsFromAccount(String customerID) {
         tabbedPane.addTab("Store Manager", managerPanel);
     }
 
+    //2)Insert a new product with the provided information
  private void addNewProduct(String productID, int productQuantity, String productBrand, double price,String productType, String expiryDate, String productionDate, String supplierID) {
-// Insert a new product with the provided information
+
+    
 String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 try (PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
@@ -318,8 +289,9 @@ ex.printStackTrace();
 JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 }
 }
+//3) Update the shift for the given Employee ID
 private void updateShift(String employeeID, String newShift) {
-    // Update the shift for the given Employee ID
+   
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
         preparedStatement.setString(1, newShift);
@@ -336,8 +308,9 @@ private void updateShift(String employeeID, String newShift) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+ //4) Fetch employee information based on the given Employee ID
 private void trackEmployees(String employeeID) {
-    // Fetch employee information based on the given Employee ID
+   
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
         preparedStatement.setString(1, employeeID);
@@ -364,8 +337,9 @@ private void trackEmployees(String employeeID) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+  // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
-    // Fetch supplier information for the given branch city
+  
     String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " +
             "JOIN Product P ON S.S_ID = P.S_ID " +
             "JOIN Branch B ON P.B_id = B.B_id " +
@@ -398,8 +372,9 @@ private void contactSupplier(String branchCity) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching supplier information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+// 6)Fetch product information based on the given Product ID
 private void showProductStock(String productID) {
-    // Fetch product information based on the given Product ID
+    
     String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery)) {
         preparedStatement.setString(1, productID);
