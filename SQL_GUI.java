@@ -290,12 +290,12 @@ JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.ge
 }
 }
 //3) Update the shift for the given Employee ID
-private void updateShift(String employeeID, String newShift) {
+private void updateShift(String E_ID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
         preparedStatement.setString(1, newShift);
-        preparedStatement.setString(2, employeeID);
+        preparedStatement.setString(2, E_ID);
         int rowsUpdated = preparedStatement.executeUpdate();
 
         if (rowsUpdated > 0) {
@@ -309,11 +309,11 @@ private void updateShift(String employeeID, String newShift) {
     }
 }
  //4) Fetch employee information based on the given Employee ID
-private void trackEmployees(String employeeID) {
+private void trackEmployees(String E_ID) {
    
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
-        preparedStatement.setString(1, employeeID);
+        preparedStatement.setString(1, E_ID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
