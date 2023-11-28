@@ -285,20 +285,20 @@ private int retrievePointsFromAccount(String customerID) {
     }
 
     //2)Insert a new product with the provided information
- private void addNewProduct(String productID, int productQuantity, String productBrand, double price,String productType, String expiryDate, String productionDate, String supplierID) {
+ private void addNewProduct(String p_id, int quantity, String p_brand, double Price,String p_type, String Ex_date, String pro_date, String SUP_id) {
 
     
 String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 try (PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
-preparedStatement.setString(1, productID);
-preparedStatement.setInt(2, productQuantity);
-preparedStatement.setString(3, productBrand);
-preparedStatement.setDouble(4, price);
-preparedStatement.setString(5, productType);
-preparedStatement.setString(6, expiryDate);
-preparedStatement.setString(7, productionDate);
-preparedStatement.setString(8, supplierID);
+preparedStatement.setString(1,  p_id);
+preparedStatement.setInt(2, quantity);
+preparedStatement.setString(3, p_brand);
+preparedStatement.setDouble(4, Price);
+preparedStatement.setString(5, p_type);
+preparedStatement.setString(6, Ex_date);
+preparedStatement.setString(7, pro_date);
+preparedStatement.setString(8, SUP_id);
 
 int rowsInserted = preparedStatement.executeUpdate();
 
@@ -363,7 +363,7 @@ private void trackEmployees(String employeeID) {
   // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
   
-    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " +
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
             "JOIN Product P ON S.S_ID = P.S_ID " +
             "JOIN Branch B ON P.B_id = B.B_id " +
             "WHERE B.city = ?";
@@ -373,15 +373,15 @@ private void contactSupplier(String branchCity) {
 
         StringBuilder supplierInfo = new StringBuilder();
         while (resultSet.next()) {
-            String supplierID = resultSet.getString("S_ID");
-            String supplierName = resultSet.getString("S_name");
-            String supplierPhone = resultSet.getString("S_phone");
-            String supplierLocation = resultSet.getString("S_location");
+            String  S_ID = resultSet.getString("S_ID");
+            String S_name = resultSet.getString("S_name");
+            String S_phonenum = resultSet.getString("S_phone");
+            String S_location = resultSet.getString("S_location");//duplicate?
 
-            supplierInfo.append("Supplier ID: ").append(supplierID).append(", ");
-            supplierInfo.append("Name: ").append(supplierName).append(", ");
-            supplierInfo.append("Phone: ").append(supplierPhone).append(", ");
-            supplierInfo.append("Location: ").append(supplierLocation).append("\n");
+            supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
+            supplierInfo.append("Name: ").append(S_name).append(", ");
+            supplierInfo.append("Phone: ").append(S_phonenum).append(", ");
+            supplierInfo.append("Location: ").append(S_location).append("\n");
         }
 
         if (supplierInfo.length() > 0) {
@@ -404,22 +404,22 @@ private void showProductStock(String productID) {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            String productType = resultSet.getString("P_type");
-            int productQuantity = resultSet.getInt("P_quantity");
-            String productBrand = resultSet.getString("P_brand");
-            double productPrice = resultSet.getDouble("price");
-            String expiryDate = resultSet.getString("Ex_date");
-            String productionDate = resultSet.getString("Pro_date");
-            String supplierID = resultSet.getString("S_ID");
+            String P_type = resultSet.getString("P_type");
+            int P_quantity = resultSet.getInt("P_quantity");
+            String P_brand = resultSet.getString("P_brand");
+            double price = resultSet.getDouble("price");
+            String Ex_date = resultSet.getString("Ex_date");
+            String Pro_date = resultSet.getString("Pro_date");
+            String S_ID= resultSet.getString("S_ID");
 
             // Display or use the retrieved product information as needed
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Product Info:\nType: " + productType +
-                    "\nQuantity: " + productQuantity +
-                    "\nBrand: " + productBrand +
-                    "\nPrice: " + productPrice +
-                    "\nExpiry Date: " + expiryDate +
-                    "\nProduction Date: " + productionDate +
-                    "\nSupplier ID: " + supplierID, "Product Information", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product Info:\nType: " + P_type +
+                    "\nQuantity: " + P_quantity +
+                    "\nBrand: " + P_brand +
+                    "\nPrice: " + price +
+                    "\nExpiry Date: " + Ex_date +
+                    "\nProduction Date: " + Pro_date +
+                    "\nSupplier ID: " + S_ID, "Product Information", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
