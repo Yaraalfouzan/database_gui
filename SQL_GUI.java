@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-
 public class SQL_GUI extends JFrame {
     //components for GUI
     private JLabel positionLabel, idLabel;
@@ -93,34 +92,80 @@ public class SQL_GUI extends JFrame {
         });
     }
     
-    //method to intialize db connection
-    private void initializeDatabaseConnection() {
-        String url = "jdbc:sql://127.0.0.1:3306/whatever";
-        String username = "root";
-        String password = "";
+    //method to intialize db connection (1)
+    // private void initializeDatabaseConnection() {
+    //     String url = "jdbc:sql://127.0.0.1:3306/whatever";
+    //     String username = "root";
+    //     String password = "";
     
-        try {
-            // Load the MariaDB JDBC driver (make sure the MariaDB JDBC driver JAR is in your classpath)
-          Class.forName("org.mariadb.jdbc.Driver");
+    //     try {
+    //         // Load the MariaDB JDBC driver (make sure the MariaDB JDBC driver JAR is in your classpath)
+    //       Class.forName("org.mariadb.jdbc.Driver");
     
-            // Connect to the database
-            connection = DriverManager.getConnection(url, username, password);
+    //         // Connect to the database
+    //         connection = DriverManager.getConnection(url, username, password);
 
-            JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
-         } 
-        catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
+    //         JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
+    //      } 
+    //     catch (ClassNotFoundException ex) {
+    //         ex.printStackTrace();
+    //         JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
+    //     } catch (SQLException ex) {
+    //         ex.printStackTrace();
+    //         JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    //     }
+    // }
+
+    //method to intialize db connection (2)
+    public static Connection getConnection() 
+{ 
+    Connection con=null; 
+    try{ 
+    DriverManager.registerDriver(new com.mysql.jdbc.Driver()); 
+    con=DriverManager.getConnection("//url of  your database"); 
+    } 
+    catch(Exception ex) 
+    { 
+        JOptionPane.showMessageDialog(null, ex); 
+    } 
+    return con; 
+} 
+    //method to intialize db connection (3)
+// try { 
+//     // Load the MySQL JDBC driver 
+//     Class.forName("com.mysql.jdbc.Driver"); 
+
+//     // Establish a connection to the database 
+//     String url = "jdbc:mysql://localhost:3306/mydatabase"; 
+//     String username = "root"; 
+//     String password = "mypassword"; 
+//     Connection conn = DriverManager.getConnection(url, username, password); 
+
+//     // Create a statement object 
+//     Statement stmt = conn.createStatement(); 
+
+//     // Execute a query and get the results 
+//     ResultSet rs = stmt.executeQuery("SELECT * FROM mytable"); 
+
+//     // Loop through the results and display them in the console 
+//     while (rs.next()) { 
+//        int id = rs.getInt("id"); 
+//        String name = rs.getString("name"); 
+//        System.out.println("ID: " + id + ", Name: " + name); 
+//     } 
+
+//     // Close the database resources 
+//     rs.close(); 
+//     stmt.close(); 
+//     conn.close(); 
+//  } catch (Exception e) { 
+//     e.printStackTrace(); 
+//  } 
+  
     
     
     private void handlePositionActions(String position) {
-       initializeDatabaseConnection();
+       //initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
 
         switch (position) {
