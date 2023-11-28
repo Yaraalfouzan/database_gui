@@ -117,15 +117,7 @@ public class SQL_GUI extends JFrame {
         }
      }
 
-   
-//do need this ???
-//     // Close the database resources 
-//     rs.close(); 
-//     stmt.close(); 
-//     conn.close(); 
-//  } catch (Exception e) { 
-//     e.printStackTrace(); 
-//  } 
+ 
   
     
     
@@ -273,43 +265,24 @@ private int retrievePointsFromAccount(String customerID) {
 }
 
 
-private void showStoreManagerButtons() {
-    JPanel managerPanel = new JPanel();
-    managerPanel.setLayout(new FlowLayout());
+    private void showStoreManagerButtons() {
+        JPanel managerPanel = new JPanel();
+        managerPanel.setLayout(new FlowLayout());
 
-    managerPanel.add(showStockButton);
+        managerPanel.add(showStockButton);
+        managerPanel.add(contactSupplierButton);
+        managerPanel.add(trackEmployeesButton);
 
-    // Add button to contact supplier
-    JButton contactSupplierButton = new JButton("Contact Supplier");
-    contactSupplierButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Replace "yourBranchCity" with the actual branch city value
-            contactSupplier("yourBranchCity");
-        }
-    });
-    managerPanel.add(contactSupplierButton);
-
-    // Add button to track employees
-    JButton trackEmployeesButton = new JButton("Track Employees");
-    trackEmployeesButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Replace "yourEmployeeID" with the actual employee ID value
-            trackEmployees("yourEmployeeID");
-        }
-    });
-    managerPanel.add(trackEmployeesButton);
-
-    tabbedPane.addTab("Store Manager", managerPanel);
-}
-
-
+<<<<<<< HEAD
 <<<<<<< HEAD
         tabbedPane.addTab("Store Manager", managerPanel);
     }
 /* 
 =======
+=======
+        tabbedPane.addTab("Store Manager", managerPanel);
+    }
+>>>>>>> 88413e0a8073bcfff295fa8810628d43f42ea883
 
 >>>>>>> 3e504c84c66b7424e428f81d4f3974e5cef8f5c7
     //2)Insert a new product with the provided information
@@ -443,14 +416,14 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
 
 
 //3) Update the shift for the given Employee ID
-private void updateShift(String E_ID, String newShift) {
+private void updateShift(String employeeID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
         preparedStatement.setString(1, newShift);
-        preparedStatement.setString(2, E_ID);
+        preparedStatement.setString(2, employeeID);
         int rowsUpdated = preparedStatement.executeUpdate();
- 
+
         if (rowsUpdated > 0) {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -461,27 +434,55 @@ private void updateShift(String E_ID, String newShift) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
- //4) Fetch employee information based on the given Employee ID
-private void trackEmployees(String E_ID) {
-   
+
+// 4) Fetch employee information based on the given Employee ID
+private void trackEmployees(String employeeID) {
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
-        preparedStatement.setString(1, E_ID);
+        preparedStatement.setString(1, employeeID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            String E_ID = resultSet.getString("E_name");
-            String E_phonenum = resultSet.getString("E_phonenum");
-            double E_salary = resultSet.getDouble("E_salary");
-            String E_Position = resultSet.getString("E_Position");
-            String E_Shift = resultSet.getString("E_Shift");
+            String employeeName = resultSet.getString("E_name");
+            String employeePhone = resultSet.getString("E_phonenum");
+            double employeeSalary = resultSet.getDouble("E_salary");
+            String employeePosition = resultSet.getString("E_Position");
+            String employeeShift = resultSet.getString("E_Shift");
 
-            // Display or use the retrieved employee information as needed
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee Info:\nName: " + Fname +
-                    "\nPhone: " + E_phonenum +
-                    "\nSalary: " + E_salary +
-                    "\nPosition: " + E_Position +
-                    "\nShift: " + emplE_Shift, "Employee Information", JOptionPane.INFORMATION_MESSAGE);
+            // Create a new JFrame to display employee information
+            JFrame employeeFrame = new JFrame("Employee Information");
+            employeeFrame.setSize(400, 200);
+            employeeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            employeeFrame.setLocationRelativeTo(null);
+
+            // Create a JPanel to hold the information
+            JPanel infoPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+
+            // Add labels and corresponding information
+            infoPanel.add(new JLabel("Employee ID:"));
+            infoPanel.add(new JLabel(employeeID));
+
+            infoPanel.add(new JLabel("Name:"));
+            infoPanel.add(new JLabel(employeeName));
+
+            infoPanel.add(new JLabel("Phone:"));
+            infoPanel.add(new JLabel(employeePhone));
+
+            infoPanel.add(new JLabel("Salary:"));
+            infoPanel.add(new JLabel(String.valueOf(employeeSalary)));
+
+            infoPanel.add(new JLabel("Position:"));
+            infoPanel.add(new JLabel(employeePosition));
+
+            infoPanel.add(new JLabel("Shift:"));
+            infoPanel.add(new JLabel(employeeShift));
+
+            // Add the panel to the frame
+            employeeFrame.add(infoPanel);
+
+            // Make the frame visible
+            employeeFrame.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -490,10 +491,11 @@ private void trackEmployees(String E_ID) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
   // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
   
-    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + 
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
             "JOIN Product P ON S.S_ID = P.S_ID " +
             "JOIN Branch B ON P.B_id = B.B_id " +
             "WHERE B.city = ?";
@@ -506,7 +508,7 @@ private void contactSupplier(String branchCity) {
             String  S_ID = resultSet.getString("S_ID");
             String S_name = resultSet.getString("S_name");
             String S_phonenum = resultSet.getString("S_phone");
-            String S_location = resultSet.getString("S_location");
+            String S_location = resultSet.getString("S_location");//duplicate?
 
             supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
             supplierInfo.append("Name: ").append(S_name).append(", ");
