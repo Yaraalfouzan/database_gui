@@ -173,12 +173,16 @@ public class SQL_GUI extends JFrame {
         cashierPanel.setLayout(new FlowLayout());
     
         // Add labels and text fields for invoice number and total price
+        JLabel usernameLabel = new JLabel("Customer Username:");
+    JTextField usernameTextField = new JTextField(10);
         JLabel invoiceNumberLabel = new JLabel("Invoice Number:");
         JTextField invoiceNumberTextField = new JTextField(10);
     
         JLabel totalPriceLabel = new JLabel("Total Price:");
         JTextField totalPriceTextField = new JTextField(10);
-    
+        cashierPanel.add(usernameLabel);
+        cashierPanel.add(usernameTextField);
+
         cashierPanel.add(invoiceNumberLabel);
         cashierPanel.add(invoiceNumberTextField);
         cashierPanel.add(totalPriceLabel);
@@ -188,7 +192,7 @@ public class SQL_GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int invoiceNumber = Integer.parseInt(invoiceNumberTextField.getText());
             int totalPrice = Integer.parseInt(totalPriceTextField.getText());
-            generateInvoice(invoiceNumber, totalPrice);
+            generateInvoice(usernameTextField.getText(),invoiceNumber, totalPrice);
             }
         });
     
@@ -198,8 +202,8 @@ public class SQL_GUI extends JFrame {
     
 
 //1)inserting a new invoice useing selcated acc id 
-    private void generateInvoice(int invoiceNumber, int totalPrice) {
-    String userName = idTextField.getText(); 
+    private void generateInvoice(String customerUsername, int invoiceNumber, int totalPrice) {
+    String userName = customerUsername; 
 
     // Fetch customer information and points from the database
     String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
@@ -273,16 +277,38 @@ private int retrievePointsFromAccount(String customerID) {
 }
 
 
-    private void showStoreManagerButtons() {
-        JPanel managerPanel = new JPanel();
-        managerPanel.setLayout(new FlowLayout());
+private void showStoreManagerButtons() {
+    JPanel managerPanel = new JPanel();
+    managerPanel.setLayout(new FlowLayout());
 
-        managerPanel.add(showStockButton);
-        managerPanel.add(contactSupplierButton);
-        managerPanel.add(trackEmployeesButton);
+    managerPanel.add(showStockButton);
 
-        tabbedPane.addTab("Store Manager", managerPanel);
-    }
+    // Add button to contact supplier
+    JButton contactSupplierButton = new JButton("Contact Supplier");
+    contactSupplierButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Replace "yourBranchCity" with the actual branch city value
+            contactSupplier("yourBranchCity");
+        }
+    });
+    managerPanel.add(contactSupplierButton);
+
+    // Add button to track employees
+    JButton trackEmployeesButton = new JButton("Track Employees");
+    trackEmployeesButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Replace "yourEmployeeID" with the actual employee ID value
+            trackEmployees("yourEmployeeID");
+        }
+    });
+    managerPanel.add(trackEmployeesButton);
+
+    tabbedPane.addTab("Store Manager", managerPanel);
+}
+
+
 
     //2)Insert a new product with the provided information
  private void addNewProduct(String p_id, int quantity, String p_brand, double Price,String p_type, String Ex_date, String pro_date, String SUP_id) {
@@ -313,14 +339,14 @@ JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.ge
 }
 }
 //3) Update the shift for the given Employee ID
-private void updateShift(String employeeID, String newShift) {
+private void updateShift(String E_ID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
         preparedStatement.setString(1, newShift);
-        preparedStatement.setString(2, employeeID);
+        preparedStatement.setString(2, E_ID);
         int rowsUpdated = preparedStatement.executeUpdate();
-
+ 
         if (rowsUpdated > 0) {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -332,26 +358,26 @@ private void updateShift(String employeeID, String newShift) {
     }
 }
  //4) Fetch employee information based on the given Employee ID
-private void trackEmployees(String employeeID) {
+private void trackEmployees(String E_ID) {
    
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
-        preparedStatement.setString(1, employeeID);
+        preparedStatement.setString(1, E_ID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            String employeeName = resultSet.getString("E_name");
-            String employeePhone = resultSet.getString("E_phonenum");
-            double employeeSalary = resultSet.getDouble("E_salary");
-            String employeePosition = resultSet.getString("E_Position");
-            String employeeShift = resultSet.getString("E_Shift");
+            String E_ID = resultSet.getString("E_name");
+            String E_phonenum = resultSet.getString("E_phonenum");
+            double E_salary = resultSet.getDouble("E_salary");
+            String E_Position = resultSet.getString("E_Position");
+            String E_Shift = resultSet.getString("E_Shift");
 
             // Display or use the retrieved employee information as needed
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee Info:\nName: " + employeeName +
-                    "\nPhone: " + employeePhone +
-                    "\nSalary: " + employeeSalary +
-                    "\nPosition: " + employeePosition +
-                    "\nShift: " + employeeShift, "Employee Information", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee Info:\nName: " + Fname +
+                    "\nPhone: " + E_phonenum +
+                    "\nSalary: " + E_salary +
+                    "\nPosition: " + E_Position +
+                    "\nShift: " + emplE_Shift, "Employee Information", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -363,7 +389,7 @@ private void trackEmployees(String employeeID) {
   // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
   
-    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + 
             "JOIN Product P ON S.S_ID = P.S_ID " +
             "JOIN Branch B ON P.B_id = B.B_id " +
             "WHERE B.city = ?";
@@ -376,7 +402,7 @@ private void contactSupplier(String branchCity) {
             String  S_ID = resultSet.getString("S_ID");
             String S_name = resultSet.getString("S_name");
             String S_phonenum = resultSet.getString("S_phone");
-            String S_location = resultSet.getString("S_location");//duplicate?
+            String S_location = resultSet.getString("S_location");
 
             supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
             supplierInfo.append("Name: ").append(S_name).append(", ");
