@@ -260,7 +260,7 @@ private int retrievePointsFromAccount(String customerID) {
 
         tabbedPane.addTab("Store Manager", managerPanel);
     }
-
+/* 
     //2)Insert a new product with the provided information
  private void addNewProduct(String p_id, int quantity, String p_brand, double Price,String p_type, String Ex_date, String pro_date, String SUP_id) {
 
@@ -289,6 +289,108 @@ ex.printStackTrace();
 JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 }
 }
+*/
+
+private void addNewProduct() {
+    JTextField pIdField = new JTextField(10);
+    JTextField quantityField = new JTextField(10);
+    JTextField pBrandField = new JTextField(10);
+    JTextField priceField = new JTextField(10);
+    JTextField pTypeField = new JTextField(10);
+    JTextField exDateField = new JTextField(10);
+    JTextField proDateField = new JTextField(10);
+    JTextField supIdField = new JTextField(10);
+
+    JButton addButton = new JButton("Add Product");
+    JPanel panel = new JPanel(new GridLayout(0, 2));
+    panel.add(new JLabel("Product ID:"));
+    panel.add(pIdField);
+    panel.add(new JLabel("Quantity:"));
+    panel.add(quantityField);
+    panel.add(new JLabel("Brand:"));
+    panel.add(pBrandField);
+    panel.add(new JLabel("Price:"));
+    panel.add(priceField);
+    panel.add(new JLabel("Type:"));
+    panel.add(pTypeField);
+    panel.add(new JLabel("Expiry Date:"));
+    panel.add(exDateField);
+    panel.add(new JLabel("Production Date:"));
+    panel.add(proDateField);
+    panel.add(new JLabel("Supplier ID:"));
+    panel.add(supIdField);
+    panel.add(addButton);
+
+    addButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            String pId = pIdField.getText();
+            int quantity = Integer.parseInt(quantityField.getText());
+            String pBrand = pBrandField.getText();
+            double price = Double.parseDouble(priceField.getText());
+            String pType = pTypeField.getText();
+            String exDate = exDateField.getText();
+            String proDate = proDateField.getText();
+            String supId = supIdField.getText();
+
+            // Now you have all the input values, you can perform the database insertion
+            insertProductIntoDatabase(pId, quantity, pBrand, price, pType, exDate, proDate, supId);
+        }
+    });
+
+    int result = JOptionPane.showConfirmDialog(null, panel, "Add New Product",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    if (result == JOptionPane.OK_OPTION) {
+        // Handle OK button action if needed
+    }
+}
+
+private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
+     String url = "jdbc:mariaDB://localhost:3306/whatever";
+     String username = "your_username";                         
+     String password = "your_password";
+     String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    try (Connection connection = DriverManager.getConnection(url, username, password);     //does that mean we need connect everything???
+         PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
+
+        preparedStatement.setString(1, pId);
+        preparedStatement.setInt(2, quantity);
+        preparedStatement.setString(3, pBrand);
+        preparedStatement.setDouble(4, price);
+        preparedStatement.setString(5, pType);
+        preparedStatement.setString(6, exDate);
+        preparedStatement.setString(7, proDate);
+        preparedStatement.setString(8, supId);
+
+        int rowsInserted = preparedStatement.executeUpdate();
+
+        if (rowsInserted > 0) {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "New product added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //3) Update the shift for the given Employee ID
 private void updateShift(String employeeID, String newShift) {
    
