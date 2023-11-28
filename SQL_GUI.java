@@ -93,28 +93,28 @@ public class SQL_GUI extends JFrame {
     }
     
     //method to intialize db connection (1)
-    // private void initializeDatabaseConnection() {
-    //     String url = "jdbc:sql://127.0.0.1:3306/whatever";
-    //     String username = "root";
-    //     String password = "";
+    private void initializeDatabaseConnection() {
+         String url = "jdbc:mariaDB://localhost:3306/whatever";
+        String username = "root";
+        String password = "";
     
-    //     try {
-    //         // Load the MariaDB JDBC driver (make sure the MariaDB JDBC driver JAR is in your classpath)
-    //       Class.forName("org.mariadb.jdbc.Driver");
+        try {
+             // Load the MariaDB JDBC driver (make sure the MariaDB JDBC driver JAR is in your classpath)
+          Class.forName("org.mariadb.jdbc.Driver");
     
-    //         // Connect to the database
-    //         connection = DriverManager.getConnection(url, username, password);
+             // Connect to the database
+           Connection con = DriverManager.getConnection(url, username, password);
 
-    //         JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
-    //      } 
-    //     catch (ClassNotFoundException ex) {
-    //         ex.printStackTrace();
-    //         JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
-    //     } catch (SQLException ex) {
-    //         ex.printStackTrace();
-    //         JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    //     }
-    // }
+            JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
+          } 
+       catch (ClassNotFoundException ex) {
+             ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+           ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+     }
 
     //method to intialize db connection (2)
     public static Connection getConnection() 
