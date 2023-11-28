@@ -167,10 +167,12 @@ public class SQL_GUI extends JFrame {
         // Add labels and text fields for invoice number and total price
         JLabel invoiceNumberLabel = new JLabel("Invoice Number:");
         JTextField invoiceNumberTextField = new JTextField(10);
-    
+        JLabel usernameLabel = new JLabel("Customer Username:");
+        JTextField usernameTextField = new JTextField(10);
         JLabel totalPriceLabel = new JLabel("Total Price:");
         JTextField totalPriceTextField = new JTextField(10);
     
+        cashierPanel.add(usernameLabel);
         cashierPanel.add(invoiceNumberLabel);
         cashierPanel.add(invoiceNumberTextField);
         cashierPanel.add(totalPriceLabel);
@@ -180,7 +182,7 @@ public class SQL_GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int invoiceNumber = Integer.parseInt(invoiceNumberTextField.getText());
             int totalPrice = Integer.parseInt(totalPriceTextField.getText());
-            generateInvoice(invoiceNumber, totalPrice);
+            generateInvoice(usernameTextField.getText(),invoiceNumber, totalPrice);
             }
         });
     
@@ -190,8 +192,8 @@ public class SQL_GUI extends JFrame {
     
 
 //1)inserting a new invoice useing selcated acc id 
-    private void generateInvoice(int invoiceNumber, int totalPrice) {
-    String userName = idTextField.getText(); 
+    private void generateInvoice(String userName2,int invoiceNumber, int totalPrice) {
+    String userName = userName2; 
 
     // Fetch customer information and points from the database
     String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
@@ -235,7 +237,6 @@ public class SQL_GUI extends JFrame {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error generating invoice: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
 private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
     // Assuming 10 SR spent earns 1 point
     int pointsPer10SR = 1;
