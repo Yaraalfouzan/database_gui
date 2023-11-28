@@ -173,6 +173,7 @@ public class SQL_GUI extends JFrame {
         JTextField totalPriceTextField = new JTextField(10);
     
         cashierPanel.add(usernameLabel);
+                cashierPanel.add(usernameTextField);
         cashierPanel.add(invoiceNumberLabel);
         cashierPanel.add(invoiceNumberTextField);
         cashierPanel.add(totalPriceLabel);
@@ -274,8 +275,7 @@ private int retrievePointsFromAccount(String customerID) {
         managerPanel.add(contactSupplierButton);
         managerPanel.add(trackEmployeesButton);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         tabbedPane.addTab("Store Manager", managerPanel);
     }
 /* 
@@ -400,18 +400,6 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
