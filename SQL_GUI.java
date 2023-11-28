@@ -320,7 +320,7 @@ private void updateShift(String E_ID, String newShift) {
         preparedStatement.setString(1, newShift);
         preparedStatement.setString(2, E_ID);
         int rowsUpdated = preparedStatement.executeUpdate();
-
+ 
         if (rowsUpdated > 0) {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -340,18 +340,18 @@ private void trackEmployees(String E_ID) {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            String employeeName = resultSet.getString("E_name");
-            String employeePhone = resultSet.getString("E_phonenum");
-            double employeeSalary = resultSet.getDouble("E_salary");
-            String employeePosition = resultSet.getString("E_Position");
-            String employeeShift = resultSet.getString("E_Shift");
+            String E_ID = resultSet.getString("E_name");
+            String E_phonenum = resultSet.getString("E_phonenum");
+            double E_salary = resultSet.getDouble("E_salary");
+            String E_Position = resultSet.getString("E_Position");
+            String E_Shift = resultSet.getString("E_Shift");
 
             // Display or use the retrieved employee information as needed
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee Info:\nName: " + employeeName +
-                    "\nPhone: " + employeePhone +
-                    "\nSalary: " + employeeSalary +
-                    "\nPosition: " + employeePosition +
-                    "\nShift: " + employeeShift, "Employee Information", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee Info:\nName: " + Fname +
+                    "\nPhone: " + E_phonenum +
+                    "\nSalary: " + E_salary +
+                    "\nPosition: " + E_Position +
+                    "\nShift: " + emplE_Shift, "Employee Information", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
