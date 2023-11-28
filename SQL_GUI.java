@@ -273,16 +273,38 @@ private int retrievePointsFromAccount(String customerID) {
 }
 
 
-    private void showStoreManagerButtons() {
-        JPanel managerPanel = new JPanel();
-        managerPanel.setLayout(new FlowLayout());
+private void showStoreManagerButtons() {
+    JPanel managerPanel = new JPanel();
+    managerPanel.setLayout(new FlowLayout());
 
-        managerPanel.add(showStockButton);
-        managerPanel.add(contactSupplierButton);
-        managerPanel.add(trackEmployeesButton);
+    managerPanel.add(showStockButton);
 
-        tabbedPane.addTab("Store Manager", managerPanel);
-    }
+    // Add button to contact supplier
+    JButton contactSupplierButton = new JButton("Contact Supplier");
+    contactSupplierButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Replace "yourBranchCity" with the actual branch city value
+            contactSupplier("yourBranchCity");
+        }
+    });
+    managerPanel.add(contactSupplierButton);
+
+    // Add button to track employees
+    JButton trackEmployeesButton = new JButton("Track Employees");
+    trackEmployeesButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Replace "yourEmployeeID" with the actual employee ID value
+            trackEmployees("yourEmployeeID");
+        }
+    });
+    managerPanel.add(trackEmployeesButton);
+
+    tabbedPane.addTab("Store Manager", managerPanel);
+}
+
+
 
     //2)Insert a new product with the provided information
  private void addNewProduct(String p_id, int quantity, String p_brand, double Price,String p_type, String Ex_date, String pro_date, String SUP_id) {
