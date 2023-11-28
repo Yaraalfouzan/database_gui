@@ -9,7 +9,7 @@ public class SQL_GUI extends JFrame {
     private JLabel positionLabel, idLabel;
     private JComboBox<String> positionComboBox;
     private JTextField idTextField;
-    private JButton loginButton, generateInvoiceButton, showStockButton, contactSupplierButton, trackEmployeesButton;
+    private JButton loginButton, generateInvoiceButton,insertProductButton, showStockButton, contactSupplierButton, trackEmployeesButton;
     private JTabbedPane tabbedPane;
     private Connection connection;
 
@@ -94,35 +94,34 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection (1)
     private void initializeDatabaseConnection() {
-
-         String url = "jdbc:mariaDB://localhost:3306/whatever";
+        String url = "jdbc:mariadb://localhost:3306/whatever";
         String username = "root";
         String password = "";
     
         try {
-             // Load the MariaDB JDBC driver (make sure the MariaDB JDBC driver JAR is in your classpath)
-          Class.forName("org.mariadb.jdbc.Driver");
+            // Load the MariaDB JDBC driver
+            Class.forName("org.mariadb.jdbc.Driver");
     
-             // Connect to the database
-           Connection con = DriverManager.getConnection(url, username, password);
-
+            // Connect to the database
+            connection = DriverManager.getConnection(url, username, password);
+    
             JOptionPane.showMessageDialog(this, "Connected to the database.", "Success", JOptionPane.INFORMATION_MESSAGE);
-          } 
-       catch (ClassNotFoundException ex) {
-             ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "MariaDB JDBC driver not found.", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-     }
+    }
+    
 
  
   
     
     
     private void handlePositionActions(String position) {
-       //initializeDatabaseConnection();
+      // initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
 
         switch (position) {
@@ -199,6 +198,7 @@ public class SQL_GUI extends JFrame {
     // Fetch customer information and points from the database
     String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchCustomerQuery)) {
+       initializeDatabaseConnection(); 
         preparedStatement.setString(1, userName);
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -267,17 +267,53 @@ private int retrievePointsFromAccount(String customerID) {
 }
 
 
-    private void showStoreManagerButtons() {
-        JPanel managerPanel = new JPanel();
-        managerPanel.setLayout(new FlowLayout());
+private void showStoreManagerButtons() {
+    JPanel managerPanel = new JPanel();
+    managerPanel.setLayout(new FlowLayout());
 
-        managerPanel.add(showStockButton);
-        managerPanel.add(contactSupplierButton);
-        managerPanel.add(trackEmployeesButton);
+    showStockButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // Implement the logic to show product stock
+            // You can call the method to fetch product information based on the given Product ID here
+            String productID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Product ID:");
+            showProductStock(productID);
+        }
+    });
 
+    contactSupplierButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // Implement the logic to contact the supplier
+            // You can call the method to contact the supplier based on the given branch city here
+            String branchCity = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Branch City:");
+            contactSupplier(branchCity);
+        }
+    });
 
-        tabbedPane.addTab("Store Manager", managerPanel);
-    }
+    trackEmployeesButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // Implement the logic to track employees
+            // You can call the method to fetch employee information based on the given Employee ID here
+            String employeeID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Employee ID:");
+            trackEmployees(employeeID);
+        }
+    });
+
+    insertProductButton = new JButton("Insert New Product");
+    insertProductButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // Implement the logic to insert a new product
+            // You can call the method to add a new product here
+            addNewProduct();
+        }
+    });
+
+    managerPanel.add(showStockButton);
+    managerPanel.add(contactSupplierButton);
+    managerPanel.add(trackEmployeesButton);
+    managerPanel.add(insertProductButton);
+
+    tabbedPane.addTab("Store Manager", managerPanel);
+}
 /* 
 =======
 =======
@@ -370,16 +406,17 @@ private void addNewProduct() {
 }
 
 private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
-     String url = "jdbc:mariaDB://localhost:3306/whatever";
-     String username = "your_username";                         
-     String password = "your_password";
+     String url = "jdbc:mariadb://localhost:3306/whatever";
+     String username = "root";                         
+     String password = "";
      String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection connection = DriverManager.getConnection(url, username, password);     //does that mean we need connect everything???
-         PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
-
-        preparedStatement.setString(1, pId);
+        Statement st = connection.createStatement();
+    PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
+     
+            preparedStatement.setString(1, pId);
         preparedStatement.setInt(2, quantity);
         preparedStatement.setString(3, pBrand);
         preparedStatement.setDouble(4, price);
