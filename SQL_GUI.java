@@ -363,7 +363,7 @@ private void trackEmployees(String E_ID) {
   // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
   
-    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + 
             "JOIN Product P ON S.S_ID = P.S_ID " +
             "JOIN Branch B ON P.B_id = B.B_id " +
             "WHERE B.city = ?";
@@ -376,7 +376,7 @@ private void contactSupplier(String branchCity) {
             String  S_ID = resultSet.getString("S_ID");
             String S_name = resultSet.getString("S_name");
             String S_phonenum = resultSet.getString("S_phone");
-            String S_location = resultSet.getString("S_location");//duplicate?
+            String S_location = resultSet.getString("S_location");
 
             supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
             supplierInfo.append("Name: ").append(S_name).append(", ");
