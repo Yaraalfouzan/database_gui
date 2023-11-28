@@ -155,7 +155,7 @@ public class SQL_GUI extends JFrame {
 
 
 //called by handlePositionActions
-    private void showCashierButtons() {
+ /*    private void showCashierButtons() {
         JPanel cashierPanel = new JPanel();
         cashierPanel.setLayout(new FlowLayout());
 
@@ -167,22 +167,50 @@ public class SQL_GUI extends JFrame {
         cashierPanel.add(generateInvoiceButton);
 
         tabbedPane.addTab("Cashier", cashierPanel);
+    }*/
+    private void showCashierButtons() {
+        JPanel cashierPanel = new JPanel();
+        cashierPanel.setLayout(new FlowLayout());
+    
+        // Add labels and text fields for invoice number and total price
+        JLabel invoiceNumberLabel = new JLabel("Invoice Number:");
+        JTextField invoiceNumberTextField = new JTextField(10);
+    
+        JLabel totalPriceLabel = new JLabel("Total Price:");
+        JTextField totalPriceTextField = new JTextField(10);
+    
+        cashierPanel.add(invoiceNumberLabel);
+        cashierPanel.add(invoiceNumberTextField);
+        cashierPanel.add(totalPriceLabel);
+        cashierPanel.add(totalPriceTextField);
+    
+        generateInvoiceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int invoiceNumber = Integer.parseInt(invoiceNumberTextField.getText());
+            int totalPrice = Integer.parseInt(totalPriceTextField.getText());
+            generateInvoice(invoiceNumber, totalPrice);
+            }
+        });
+    
+        cashierPanel.add(generateInvoiceButton);
+        tabbedPane.addTab("Cashier", cashierPanel);
     }
+    
 
 //1)inserting a new invoice useing selcated acc id 
-    private void generateInvoice() {
-    String customerID = idTextField.getText(); // Assuming the entered ID is the customer's ID
+    private void generateInvoice(int invoiceNumber, int totalPrice) {
+    String userName = idTextField.getText(); 
 
     // Fetch customer information and points from the database
-    String fetchCustomerQuery = "SELECT * FROM Account WHERE userName = ?";
+    String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchCustomerQuery)) {
-        preparedStatement.setString(1, customerID);
+        preparedStatement.setString(1, userName);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            String accountPhone = resultSet.getString("acc_phonenum");
-            int accountPoints = resultSet.getInt("acc_points");
-            //int accountPoints = retrievePointsFromAccount(customerID);
+            String Acc_phoneNum = resultSet.getString("Acc_phoneNum");
+            int points = resultSet.getInt("points");
+            //int points = retrievePointsFromAccount(userName);
 
 
             // Your logic to generate the invoice based on customer information
@@ -191,23 +219,18 @@ public class SQL_GUI extends JFrame {
 
             // Update customer points (considering 10 SR spent earns 1 point)
              // Read invoice amount from the user
-             String invoiceAmountString = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Invoice Amount:");
-             if (invoiceAmountString == null || invoiceAmountString.isEmpty()) {
-                 // Handle case where the user cancels or enters an empty string
-                 JOptionPane.showMessageDialog(SQL_GUI.this, "Invoice generation canceled.", "Canceled", JOptionPane.INFORMATION_MESSAGE);
-                 return;
-             }
+             int Totl_Price = totalPrice;
  
-             int invoiceAmount = Integer.parseInt(invoiceAmountString);
+             int invoiceNum = invoiceNumber;
  
-            int pointsEarned = calculatePointsEarnedForInvoiceAmount(invoiceAmount);
-            int updatedPoints = accountPoints + pointsEarned;
+            int pointsEarned = calculatePointsEarnedForInvoiceAmount(Totl_Price);
+            int updatedPoints = points + pointsEarned;
 
             // Update the customer's points in the database
-            String updatePointsQuery = "UPDATE Account SET acc_points = ? WHERE userName = ?";
+            String updatePointsQuery = "UPDATE ACCOUNT SET points = ? WHERE userName = ?";
             try (PreparedStatement updatePointsStatement = connection.prepareStatement(updatePointsQuery)) {
                 updatePointsStatement.setInt(1, updatedPoints);
-                updatePointsStatement.setString(2, customerID);
+                updatePointsStatement.setString(2, userName);
                 updatePointsStatement.executeUpdate();
             }
 
@@ -233,13 +256,13 @@ private int retrievePointsFromAccount(String customerID) {
     int points = 0;
 
     // Fetch customer points from the database
-    String fetchPointsQuery = "SELECT acc_points FROM Account WHERE userName = ?";
+    String fetchPointsQuery = "SELECT points FROM ACCOUNT WHERE userName = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchPointsQuery)) {
         preparedStatement.setString(1, customerID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            points = resultSet.getInt("acc_points");
+            points = resultSet.getInt("points");
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -290,12 +313,12 @@ JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.ge
 }
 }
 //3) Update the shift for the given Employee ID
-private void updateShift(String employeeID, String newShift) {
+private void updateShift(String E_ID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
         preparedStatement.setString(1, newShift);
-        preparedStatement.setString(2, employeeID);
+        preparedStatement.setString(2, E_ID);
         int rowsUpdated = preparedStatement.executeUpdate();
 
         if (rowsUpdated > 0) {
@@ -309,11 +332,11 @@ private void updateShift(String employeeID, String newShift) {
     }
 }
  //4) Fetch employee information based on the given Employee ID
-private void trackEmployees(String employeeID) {
+private void trackEmployees(String E_ID) {
    
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
-        preparedStatement.setString(1, employeeID);
+        preparedStatement.setString(1, E_ID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
