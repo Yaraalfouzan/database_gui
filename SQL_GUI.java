@@ -262,20 +262,20 @@ private int retrievePointsFromAccount(String customerID) {
     }
 
     //2)Insert a new product with the provided information
- private void addNewProduct(String productID, int productQuantity, String productBrand, double price,String productType, String expiryDate, String productionDate, String supplierID) {
+ private void addNewProduct(String p_id, int quantity, String p_brand, double Price,String p_type, String Ex_date, String pro_date, String SUP_id) {
 
     
 String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 try (PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
-preparedStatement.setString(1, productID);
-preparedStatement.setInt(2, productQuantity);
-preparedStatement.setString(3, productBrand);
-preparedStatement.setDouble(4, price);
-preparedStatement.setString(5, productType);
-preparedStatement.setString(6, expiryDate);
-preparedStatement.setString(7, productionDate);
-preparedStatement.setString(8, supplierID);
+preparedStatement.setString(1,  p_id);
+preparedStatement.setInt(2, quantity);
+preparedStatement.setString(3, p_brand);
+preparedStatement.setDouble(4, Price);
+preparedStatement.setString(5, p_type);
+preparedStatement.setString(6, Ex_date);
+preparedStatement.setString(7, pro_date);
+preparedStatement.setString(8, SUP_id);
 
 int rowsInserted = preparedStatement.executeUpdate();
 
