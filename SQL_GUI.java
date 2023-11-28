@@ -117,15 +117,7 @@ public class SQL_GUI extends JFrame {
         }
      }
 
-   
-//do need this ???
-//     // Close the database resources 
-//     rs.close(); 
-//     stmt.close(); 
-//     conn.close(); 
-//  } catch (Exception e) { 
-//     e.printStackTrace(); 
-//  } 
+ 
   
     
     
@@ -331,7 +323,7 @@ private void updateShift(String employeeID, String newShift) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
- //4) Fetch employee information based on the given Employee ID
+
 // 4) Fetch employee information based on the given Employee ID
 private void trackEmployees(String employeeID) {
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";

@@ -1,7 +1,13 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
+    {
+      "type": "java",
+      "name": "SQL_GUI",
+      "request": "launch",
+      "mainClass": "SQL_GUI",
+      "projectName": "database_gui_37a3f7ce"
+    },
     {
       "type": "java",
       "name": "SQL_GUI",
