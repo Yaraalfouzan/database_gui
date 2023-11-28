@@ -313,12 +313,12 @@ JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.ge
 }
 }
 //3) Update the shift for the given Employee ID
-private void updateShift(String employeeID, String newShift) {
+private void updateShift(String E_ID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
         preparedStatement.setString(1, newShift);
-        preparedStatement.setString(2, employeeID);
+        preparedStatement.setString(2, E_ID);
         int rowsUpdated = preparedStatement.executeUpdate();
 
         if (rowsUpdated > 0) {
@@ -332,11 +332,11 @@ private void updateShift(String employeeID, String newShift) {
     }
 }
  //4) Fetch employee information based on the given Employee ID
-private void trackEmployees(String employeeID) {
+private void trackEmployees(String E_ID) {
    
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
-        preparedStatement.setString(1, employeeID);
+        preparedStatement.setString(1, E_ID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
@@ -363,7 +363,7 @@ private void trackEmployees(String employeeID) {
   // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
   
-    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + 
             "JOIN Product P ON S.S_ID = P.S_ID " +
             "JOIN Branch B ON P.B_id = B.B_id " +
             "WHERE B.city = ?";
@@ -376,7 +376,7 @@ private void contactSupplier(String branchCity) {
             String  S_ID = resultSet.getString("S_ID");
             String S_name = resultSet.getString("S_name");
             String S_phonenum = resultSet.getString("S_phone");
-            String S_location = resultSet.getString("S_location");//duplicate?
+            String S_location = resultSet.getString("S_location");
 
             supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
             supplierInfo.append("Name: ").append(S_name).append(", ");
