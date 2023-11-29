@@ -185,7 +185,7 @@ public class SQL_GUI extends JFrame {
 private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
     String url = "jdbc:mysql://localhost:3306/whatever";
     String username = "root";
-    String password = "";
+    String password =   null;
 
     try (Connection connection = DriverManager.getConnection(url, username, password)) {
         // Fetch customer information and points from the database
@@ -247,7 +247,7 @@ private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
 private int retrievePointsFromAccount(String customerID) {
     int points = 0;
 
-    String url = "jdbc:sql://localhost:3306/whatever";
+    String url = "jdbc:mysql://localhost:3306/whatever";
     String username = "root";
     String password = "";
 
