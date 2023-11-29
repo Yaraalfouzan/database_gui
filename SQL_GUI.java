@@ -94,10 +94,10 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection 
     private void initializeDatabaseConnection() {
-        String url = "jdbc:mysql://localhost:3306/whatever"; // Update the URL for MySQL
+        String url = "jdbc:mysql://localhost:3306/mysql"; // Update the URL for MySQL
 
         String username = "root";
-        String password = "";
+        String password = "11111111";
     
         try {
             // Load the MariaDB JDBC driver
@@ -117,7 +117,7 @@ public class SQL_GUI extends JFrame {
 
 
     private void handlePositionActions(String position) {
-      //initializeDatabaseConnection();
+        initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
 
         switch (position) {
@@ -183,9 +183,9 @@ public class SQL_GUI extends JFrame {
 
 //1)inserting a new invoice useing selcated acc id 
 private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
-    String url = "jdbc:mysql://localhost:3306/whatever";
+    String url = "jdbc:mysql://localhost:3306/mysql";
     String username = "root";
-    String password =   null;
+    String password =  "11111111";
 
     try (Connection connection = DriverManager.getConnection(url, username, password)) {
         // Fetch customer information and points from the database
@@ -196,10 +196,6 @@ private void generateInvoice(String userName, int invoiceNumber, int totalPrice)
 
             if (resultSet.next()) {
                 int points = resultSet.getInt("points");
-
-                // Your logic to generate the invoice based on customer information
-                // Fetch the purchased items and their details from the database
-                // Update the invoice table in the database with relevant information
 
                 // Update customer points (considering 10 SR spent earns 1 point)
                 int pointsEarned = calculatePointsEarnedForInvoiceAmount(totalPrice);
@@ -247,9 +243,9 @@ private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
 private int retrievePointsFromAccount(String customerID) {
     int points = 0;
 
-    String url = "jdbc:mysql://localhost:3306/whatever";
+    String url = "jdbc:mysql://localhost:3306/mysql";
     String username = "root";
-    String password = "";
+    String password = "11111111";
 
     // Fetch customer points from the database
     String fetchPointsQuery = "SELECT points FROM ACCOUNT WHERE userName = ?";
@@ -264,7 +260,6 @@ private int retrievePointsFromAccount(String customerID) {
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
-        // Handle database query errors...
     }
 
     return points;
@@ -318,7 +313,7 @@ private void showStoreManagerButtons() {
 
     tabbedPane.addTab("Store Manager", managerPanel);
 }
-//????
+
 private void addNewProduct() {
     JTextField pIdField = new JTextField(10);
     JTextField quantityField = new JTextField(10);
@@ -360,7 +355,6 @@ private void addNewProduct() {
             String proDate = proDateField.getText();
             String supId = supIdField.getText();
 
-            // Now you have all the input values, you can perform the database insertion
             insertProductIntoDatabase(pId, quantity, pBrand, price, pType, exDate, proDate, supId);
         }
     });
@@ -368,16 +362,15 @@ private void addNewProduct() {
     int result = JOptionPane.showConfirmDialog(null, panel, "Add New Product",
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
     if (result == JOptionPane.OK_OPTION) {
-        // Handle OK button action if needed
     }
 }
 
 
 //insert 2
 private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
-     String url = "jdbc:mysql://localhost:3306/whatever";
+     String url = "jdbc:mysql://localhost:3306/mysql";
      String username = "root";                         
-     String password = "";
+     String password = "11111111";
      String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -412,7 +405,7 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
 
 private void updateShift(String employeeID, String newShift) {
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
-    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yourDatabaseName", "username", "password");
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mysql", "root", "11111111");
          PreparedStatement preparedStatement = conn.prepareStatement(updateShiftQuery)) {
         
         preparedStatement.setString(1, newShift);
@@ -458,6 +451,12 @@ private void updateShift(String employeeID, String newShift) {
 // 4) Fetch employee information based on the given Employee ID
 
 private void trackEmployees(String employeeID) {
+    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mysql", "root", "11111111");
+         PreparedStatement preparedStatement = conn.prepareStatement(fetchEmployeeQuery)) {
+        
+        preparedStatement.setString(1, employeeID);
     // Initialize the database connection
     initializeDatabaseConnection();
 
@@ -547,9 +546,9 @@ private void showProductStock(String productID) {
     String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
     try {
         // Establish the database connection
-        String url = "jdbc:mysql://localhost:3306/your_database";
-        String username = "your_username";
-        String password = "your_password";
+        String url = "jdbc:mysql://localhost:3306/mysql";
+        String username = "root";
+        String password = "11111111";
         connection = DriverManager.getConnection(url, username, password);
 
         // Prepare and execute the query
