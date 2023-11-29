@@ -2,6 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "SQL_GUI",
+      "request": "launch",
+      "mainClass": "SQL_GUI",
+      "projectName": "database_gui_fe3fd950"
+    },
+    {
+      "type": "java",
+      "name": "SQL_GUI",
+      "request": "launch",
+      "mainClass": "SQL_GUI",
+      "projectName": "database_gui_37a3f7ce"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

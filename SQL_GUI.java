@@ -9,7 +9,7 @@ public class SQL_GUI extends JFrame {
     private JLabel positionLabel, idLabel;
     private JComboBox<String> positionComboBox;
     private JTextField idTextField;
-    private JButton loginButton, generateInvoiceButton,insertProductButton, showStockButton, contactSupplierButton, trackEmployeesButton;
+    private JButton loginButton,retrievePointsButton, generateInvoiceButton,insertProductButton, showStockButton, contactSupplierButton, trackEmployeesButton;
     private JTabbedPane tabbedPane;
     private Connection connection;
     public SQL_GUI() {
@@ -30,6 +30,9 @@ public class SQL_GUI extends JFrame {
         // Buttons for Cashier
        // updatePointsButton = new JButton("Update Points");
         generateInvoiceButton = new JButton("Generate Invoice");
+        retrievePointsButton = new JButton("Retrieve Points");
+       
+        
 
         // Buttons for Store Manager
         showStockButton = new JButton("Show Product Stock");
@@ -91,14 +94,14 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection 
     private void initializeDatabaseConnection() {
-        String url = "jdbc:sql://localhost:3306/whatever"; // Update the URL for MySQL
+        String url = "jdbc:mysql://localhost:3306/whatever"; // Update the URL for MySQL
 
         String username = "root";
         String password = "";
     
         try {
             // Load the MariaDB JDBC driver
-            Class.forName("com.sql.cj.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             // Connect to the database
             connection = DriverManager.getConnection(url, username, password);
     
@@ -114,7 +117,7 @@ public class SQL_GUI extends JFrame {
 
 
     private void handlePositionActions(String position) {
-      // initializeDatabaseConnection();
+      //initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
 
         switch (position) {
@@ -162,59 +165,76 @@ public class SQL_GUI extends JFrame {
             generateInvoice(usernameTextField.getText(),invoiceNumber, totalPrice);
             }
         });
-    
+
+     retrievePointsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String userName = idTextField.getText();
+                int points = retrievePointsFromAccount(userName);
+                JOptionPane.showMessageDialog(SQL_GUI.this, "Points for " + userName + ": " + points, "Points Information", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         cashierPanel.add(generateInvoiceButton);
+        cashierPanel.add(generateInvoiceButton);
+        cashierPanel.add(retrievePointsButton); 
         tabbedPane.addTab("Cashier", cashierPanel);
     }
     
 
 //1)inserting a new invoice useing selcated acc id 
-    private void generateInvoice(String userName2,int invoiceNumber, int totalPrice) {
-    String userName = userName2; 
+private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
+    String url = "jdbc:mysql://localhost:3306/whatever";
+    String username = "root";
+    String password =   null;
 
-    // Fetch customer information and points from the database
-    String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchCustomerQuery)) {
-       initializeDatabaseConnection(); 
-        preparedStatement.setString(1, userName);
-        ResultSet resultSet = preparedStatement.executeQuery();
+    try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        // Fetch customer information and points from the database
+        String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(fetchCustomerQuery)) {
+            preparedStatement.setString(1, userName);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            String Acc_phoneNum = resultSet.getString("Acc_phoneNum");
-            int points = resultSet.getInt("points");
-            //int points = retrievePointsFromAccount(userName);
+            if (resultSet.next()) {
+                int points = resultSet.getInt("points");
 
+                // Your logic to generate the invoice based on customer information
+                // Fetch the purchased items and their details from the database
+                // Update the invoice table in the database with relevant information
 
-            // Your logic to generate the invoice based on customer information
-            // Fetch the purchased items and their details from the database
-            // Update the invoice table in the database with relevant information
+                // Update customer points (considering 10 SR spent earns 1 point)
+                int pointsEarned = calculatePointsEarnedForInvoiceAmount(totalPrice);
+                int updatedPoints = points + pointsEarned;
 
-            // Update customer points (considering 10 SR spent earns 1 point)
-             // Read invoice amount from the user
-             int Totl_Price = totalPrice;
- 
-             int invoiceNum = invoiceNumber;
- 
-            int pointsEarned = calculatePointsEarnedForInvoiceAmount(Totl_Price);
-            int updatedPoints = points + pointsEarned;
+                // Update the customer's points in the database
+                String updatePointsQuery = "UPDATE ACCOUNT SET points = ? WHERE userName = ?";
+                try (PreparedStatement updatePointsStatement = connection.prepareStatement(updatePointsQuery)) {
+                    updatePointsStatement.setInt(1, updatedPoints);
+                    updatePointsStatement.setString(2, userName);
+                    updatePointsStatement.executeUpdate();
+                }
 
-            // Update the customer's points in the database
-            String updatePointsQuery = "UPDATE ACCOUNT SET points = ? WHERE userName = ?";
-            try (PreparedStatement updatePointsStatement = connection.prepareStatement(updatePointsQuery)) {
-                updatePointsStatement.setInt(1, updatedPoints);
-                updatePointsStatement.setString(2, userName);
-                updatePointsStatement.executeUpdate();
+                // Insert a new invoice into the INVOICE table
+                String insertInvoiceQuery = "INSERT INTO INVOICE (InvoiceNum, Totl_Price , Acc_userName) VALUES (?, ?, ?)";
+                try (PreparedStatement insertInvoiceStatement = connection.prepareStatement(insertInvoiceQuery)) {
+                    insertInvoiceStatement.setInt(1, invoiceNumber);
+                    insertInvoiceStatement.setInt(2, totalPrice);
+                    insertInvoiceStatement.setString(3, userName);
+                    insertInvoiceStatement.executeUpdate();
+                }
+
+                JOptionPane.showMessageDialog(SQL_GUI.this, "Invoice generated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(SQL_GUI.this, "Customer not found.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Invoice generated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Customer not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     } catch (SQLException ex) {
+        // Log the error instead of printing the stack trace
         ex.printStackTrace();
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error generating invoice: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+ 
+
 
 private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
     // Assuming 10 SR spent earns 1 point
@@ -227,9 +247,15 @@ private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
 private int retrievePointsFromAccount(String customerID) {
     int points = 0;
 
+    String url = "jdbc:mysql://localhost:3306/whatever";
+    String username = "root";
+    String password = "";
+
     // Fetch customer points from the database
     String fetchPointsQuery = "SELECT points FROM ACCOUNT WHERE userName = ?";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchPointsQuery)) {
+    try (Connection connection = DriverManager.getConnection(url, username, password);
+         PreparedStatement preparedStatement = connection.prepareStatement(fetchPointsQuery)) {
+
         preparedStatement.setString(1, customerID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -243,6 +269,7 @@ private int retrievePointsFromAccount(String customerID) {
 
     return points;
 }
+
 
 private void showStoreManagerButtons() {
     JPanel managerPanel = new JPanel();
@@ -274,27 +301,6 @@ private void showStoreManagerButtons() {
             trackEmployees(employeeID);
         }
     });
-
-    JButton showEmployeeInfoButton = new JButton("Show Employee Information");
-    showEmployeeInfoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            // Implement the logic to show employee information
-            // You can call the method to display employee information based on the given Employee ID here
-            String employeeID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Employee ID:");
-            showEmployeeInformation(employeeID);
-        }
-    });
-    JButton updateEmployeeShiftButton = new JButton("Update Employee Shift");
-    updateEmployeeShiftButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            // Implement the logic to update employee shift
-            // You can call the method to update employee shift based on the given Employee ID and new shift here
-            String employeeID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Employee ID:");
-            String newShift = JOptionPane.showInputDialog(SQL_GUI.this, "Enter New Shift:");
-            updateShift(employeeID, newShift);
-        }
-    });
-     
 
     insertProductButton = new JButton("Insert New Product");
     insertProductButton.addActionListener(new ActionListener() {
@@ -369,7 +375,7 @@ private void addNewProduct() {
 
 //insert 2
 private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
-     String url = "jdbc:sql://localhost:3306/whatever";
+     String url = "jdbc:mysql://localhost:3306/whatever";
      String username = "root";                         
      String password = "";
      String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
@@ -403,6 +409,32 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
 
 
 //3) Update the shift for the given Employee ID
+
+private void updateShift(String employeeID, String newShift) {
+    String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yourDatabaseName", "username", "password");
+         PreparedStatement preparedStatement = conn.prepareStatement(updateShiftQuery)) {
+        
+        preparedStatement.setString(1, newShift);
+        preparedStatement.setString(2, employeeID);
+        int rowsUpdated = preparedStatement.executeUpdate();
+
+        if (rowsUpdated > 0) {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found or shift not updated.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+
+/* 
 private void updateShift(String employeeID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
@@ -421,11 +453,16 @@ private void updateShift(String employeeID, String newShift) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-// 8) Fetch employee information based on the given Employee ID
-private void showEmployeeInformation(String employeeID) {
-    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
 
-    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
+*/ 
+// 4) Fetch employee information based on the given Employee ID
+
+private void trackEmployees(String employeeID) {
+    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/whatever", "username", "password");
+         PreparedStatement preparedStatement = conn.prepareStatement(fetchEmployeeQuery)) {
+        
         preparedStatement.setString(1, employeeID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -479,15 +516,14 @@ private void showEmployeeInformation(String employeeID) {
 }
 
 
-
-// 4) Fetch employee information based on the given Employee ID
- /*private void trackEmployees(String employeeID) {
+/* 
+private void trackEmployees(String employeeID) {
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
         preparedStatement.setString(1, employeeID);
         ResultSet resultSet = preparedStatement.executeQuery();
-
+    
         if (resultSet.next()) {
             String employeeName = resultSet.getString("E_name");
             String employeePhone = resultSet.getString("E_phonenum");
@@ -536,50 +572,57 @@ private void showEmployeeInformation(String employeeID) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
- */
+*/
 
- private void trackEmployees(String employeeID) {
-    // Initialize the database connection
-    initializeDatabaseConnection();
+// 5)Fetch supplier information for the given branch city
 
-    // Create buttons for employee actions
-    JButton showEmployeeInfoButton = new JButton("Show Employee Information");
-    JButton updateEmployeeShiftButton = new JButton("Update Employee Shift");
 
-    // Action listener for showing employee information
-    showEmployeeInfoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            showEmployeeInformation(employeeID);
+private void contactSupplier(String branchCity) {
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " +
+            "JOIN Product P ON S.S_ID = P.S_ID " +
+            "JOIN Branch B ON P.B_id = B.B_id " +
+            "WHERE B.city = ?";
+    
+    String url = "jdbc:mysql://localhost:3306/your_database";
+    String username = "your_username";
+    String password = "your_password";
+
+    try (Connection connection = DriverManager.getConnection(url, username, password);
+         PreparedStatement preparedStatement = connection.prepareStatement(fetchSupplierQuery)) {
+
+        preparedStatement.setString(1, branchCity);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        StringBuilder supplierInfo = new StringBuilder();
+        while (resultSet.next()) {
+            String S_ID = resultSet.getString("S_ID");
+            String S_name = resultSet.getString("S_name");
+            String S_phonenum = resultSet.getString("S_phone");
+            String S_location = resultSet.getString("S_location");
+
+            supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
+            supplierInfo.append("Name: ").append(S_name).append(", ");
+            supplierInfo.append("Phone: ").append(S_phonenum).append(", ");
+            supplierInfo.append("Location: ").append(S_location).append("\n");
         }
-    });
 
-    // Action listener for updating employee shift
-    updateEmployeeShiftButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            String newShift = JOptionPane.showInputDialog(SQL_GUI.this, "Enter New Shift:");
-            updateShift(employeeID, newShift);
+        if (supplierInfo.length() > 0) {
+            JOptionPane.showMessageDialog(SQL_GUI.this,
+                    "Suppliers for Branch in " + branchCity + ":\n" + supplierInfo.toString(),
+                    "Supplier Information",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this,
+                    "No suppliers found for the given branch city.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-    });
-
-    // Create an array of buttons for the option dialog
-    JButton[] buttons = {showEmployeeInfoButton, updateEmployeeShiftButton};
-
-    // Display option dialog for the user to choose the action
-    int choice = JOptionPane.showOptionDialog(
-            SQL_GUI.this,
-            "Select an action:",
-            "Track Employee",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            buttons,
-            buttons[0]);
-
-    // Handle the chosen action
-    if (choice == 0) {
-        showEmployeeInfoButton.doClick(); // Simulate button click for showing employee information
-    } else if (choice == 1) {
-        updateEmployeeShiftButton.doClick(); // Simulate button click for updating employee shift
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this,
+                "Error fetching supplier information: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
 }
 
@@ -588,9 +631,38 @@ private void showEmployeeInformation(String employeeID) {
 
 
 
-// 5)Fetch supplier information for the given branch city
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
 private void contactSupplier(String branchCity) {
-    initializeDatabaseConnection();
   
     String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
             "JOIN Product P ON S.S_ID = P.S_ID " +
@@ -624,11 +696,62 @@ private void contactSupplier(String branchCity) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching supplier information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
+*/
 
 // 6)Fetch product information based on the given Product ID
 private void showProductStock(String productID) {
-    initializeDatabaseConnection();
+    Connection connection = null; // Initialize the connection
+    String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
+    try {
+        // Establish the database connection
+        String url = "jdbc:mysql://localhost:3306/your_database";
+        String username = "your_username";
+        String password = "your_password";
+        connection = DriverManager.getConnection(url, username, password);
+
+        // Prepare and execute the query
+        PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery);
+        preparedStatement.setString(1, productID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String P_type = resultSet.getString("P_type");
+            int P_quantity = resultSet.getInt("P_quantity");
+            String P_brand = resultSet.getString("P_brand");
+            double price = resultSet.getDouble("price");
+            String Ex_date = resultSet.getString("Ex_date");
+            String Pro_date = resultSet.getString("Pro_date");
+            String S_ID = resultSet.getString("S_ID");
+
+            // Display or use the retrieved product information as needed
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product Info:\nType: " + P_type +
+                    "\nQuantity: " + P_quantity +
+                    "\nBrand: " + P_brand +
+                    "\nPrice: " + price +
+                    "\nExpiry Date: " + Ex_date +
+                    "\nProduction Date: " + Pro_date +
+                    "\nSupplier ID: " + S_ID, "Product Information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching product information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        // Close the connection in the finally block to ensure it's always closed
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+}
+
+
+/* 
+private void showProductStock(String productID) {
     
     String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery)) {
@@ -661,7 +784,7 @@ private void showProductStock(String productID) {
     }
 }
 
-
+*/
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
