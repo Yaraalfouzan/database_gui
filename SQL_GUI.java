@@ -275,6 +275,27 @@ private void showStoreManagerButtons() {
         }
     });
 
+    JButton showEmployeeInfoButton = new JButton("Show Employee Information");
+    showEmployeeInfoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // Implement the logic to show employee information
+            // You can call the method to display employee information based on the given Employee ID here
+            String employeeID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Employee ID:");
+            showEmployeeInformation(employeeID);
+        }
+    });
+    JButton updateEmployeeShiftButton = new JButton("Update Employee Shift");
+    updateEmployeeShiftButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // Implement the logic to update employee shift
+            // You can call the method to update employee shift based on the given Employee ID and new shift here
+            String employeeID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Employee ID:");
+            String newShift = JOptionPane.showInputDialog(SQL_GUI.this, "Enter New Shift:");
+            updateShift(employeeID, newShift);
+        }
+    });
+     
+
     insertProductButton = new JButton("Insert New Product");
     insertProductButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -400,12 +421,10 @@ private void updateShift(String employeeID, String newShift) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
-
-// 4) Fetch employee information based on the given Employee ID
-private void trackEmployees(String employeeID) {
+// 8) Fetch employee information based on the given Employee ID
+private void showEmployeeInformation(String employeeID) {
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
-    
+
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
         preparedStatement.setString(1, employeeID);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -460,8 +479,118 @@ private void trackEmployees(String employeeID) {
 }
 
 
+
+// 4) Fetch employee information based on the given Employee ID
+ /*private void trackEmployees(String employeeID) {
+    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    
+    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
+        preparedStatement.setString(1, employeeID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String employeeName = resultSet.getString("E_name");
+            String employeePhone = resultSet.getString("E_phonenum");
+            double employeeSalary = resultSet.getDouble("E_salary");
+            String employeePosition = resultSet.getString("E_Position");
+            String employeeShift = resultSet.getString("E_Shift");
+
+            // Create a new JFrame to display employee information
+            JFrame employeeFrame = new JFrame("Employee Information");
+            employeeFrame.setSize(400, 200);
+            employeeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            employeeFrame.setLocationRelativeTo(null);
+
+            // Create a JPanel to hold the information
+            JPanel infoPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+
+            // Add labels and corresponding information
+            infoPanel.add(new JLabel("Employee ID:"));
+            infoPanel.add(new JLabel(employeeID));
+
+            infoPanel.add(new JLabel("Name:"));
+            infoPanel.add(new JLabel(employeeName));
+
+            infoPanel.add(new JLabel("Phone:"));
+            infoPanel.add(new JLabel(employeePhone));
+
+            infoPanel.add(new JLabel("Salary:"));
+            infoPanel.add(new JLabel(String.valueOf(employeeSalary)));
+
+            infoPanel.add(new JLabel("Position:"));
+            infoPanel.add(new JLabel(employeePosition));
+
+            infoPanel.add(new JLabel("Shift:"));
+            infoPanel.add(new JLabel(employeeShift));
+
+            // Add the panel to the frame
+            employeeFrame.add(infoPanel);
+
+            // Make the frame visible
+            employeeFrame.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+ */
+
+ private void trackEmployees(String employeeID) {
+    // Initialize the database connection
+    initializeDatabaseConnection();
+
+    // Create buttons for employee actions
+    JButton showEmployeeInfoButton = new JButton("Show Employee Information");
+    JButton updateEmployeeShiftButton = new JButton("Update Employee Shift");
+
+    // Action listener for showing employee information
+    showEmployeeInfoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            showEmployeeInformation(employeeID);
+        }
+    });
+
+    // Action listener for updating employee shift
+    updateEmployeeShiftButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            String newShift = JOptionPane.showInputDialog(SQL_GUI.this, "Enter New Shift:");
+            updateShift(employeeID, newShift);
+        }
+    });
+
+    // Create an array of buttons for the option dialog
+    JButton[] buttons = {showEmployeeInfoButton, updateEmployeeShiftButton};
+
+    // Display option dialog for the user to choose the action
+    int choice = JOptionPane.showOptionDialog(
+            SQL_GUI.this,
+            "Select an action:",
+            "Track Employee",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            buttons,
+            buttons[0]);
+
+    // Handle the chosen action
+    if (choice == 0) {
+        showEmployeeInfoButton.doClick(); // Simulate button click for showing employee information
+    } else if (choice == 1) {
+        updateEmployeeShiftButton.doClick(); // Simulate button click for updating employee shift
+    }
+}
+
+
+
+
+
+
 // 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
+    initializeDatabaseConnection();
   
     String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
             "JOIN Product P ON S.S_ID = P.S_ID " +
@@ -499,6 +628,7 @@ private void contactSupplier(String branchCity) {
 
 // 6)Fetch product information based on the given Product ID
 private void showProductStock(String productID) {
+    initializeDatabaseConnection();
     
     String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery)) {
