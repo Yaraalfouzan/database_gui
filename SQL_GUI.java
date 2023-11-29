@@ -498,7 +498,7 @@ private void trackEmployees(String employeeID) {
         showEmployeeInfoButton.doClick(); // Simulate button click for showing employee information
     } else if (choice == 1) {
         updateEmployeeShiftButton.doClick(); // Simulate button click for updating employee shift
-    }
+    }}
 }
 
 
