@@ -449,13 +449,9 @@ private void updateShift(String employeeID, String newShift) {
 */ 
 // 4) Fetch employee information based on the given Employee ID
 
+
+
 private void trackEmployees(String employeeID) {
-    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
-    
-    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mysql", "root", "11111111");
-         PreparedStatement preparedStatement = conn.prepareStatement(fetchEmployeeQuery)) {
-        
-        preparedStatement.setString(1, employeeID);
     // Initialize the database connection
     initializeDatabaseConnection();
 
@@ -497,8 +493,14 @@ private void trackEmployees(String employeeID) {
         showEmployeeInfoButton.doClick(); // Simulate button click for showing employee information
     } else if (choice == 1) {
         updateEmployeeShiftButton.doClick(); // Simulate button click for updating employee shift
-    }}
+    }
 }
+
+
+
+
+
+
 
 
 
