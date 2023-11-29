@@ -6,21 +6,7 @@
       "name": "SQL_GUI",
       "request": "launch",
       "mainClass": "SQL_GUI",
-<<<<<<< HEAD
-<<<<<<< HEAD
-      "projectName": "database_gui_478a7e5d"
-=======
-=======
       "projectName": "database_gui_37a3f7ce"
-    },
-    {
-      "type": "java",
-      "name": "SQL_GUI",
-      "request": "launch",
-      "mainClass": "SQL_GUI",
->>>>>>> 88413e0a8073bcfff295fa8810628d43f42ea883
-      "projectName": "database_gui_fe3fd950"
->>>>>>> 3e504c84c66b7424e428f81d4f3974e5cef8f5c7
     },
     {
       "name": "C/C++ Runner: Debug Session",
@@ -33,7 +19,6 @@
       "program": "c:/Users/hp/Documents/GitHub/database_gui/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
-      "vmArgs": "--module-path /Users/yaraalfouzan/Downloads/javafx-sdk-21.0.1/lib/to/javafx-sdk-21.0.1/lib --add-modules javafx.controls javafx.fxml",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
