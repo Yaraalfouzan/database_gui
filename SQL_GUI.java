@@ -503,7 +503,7 @@ private void trackEmployees(String employeeID) {
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
         preparedStatement.setString(1, employeeID);
         ResultSet resultSet = preparedStatement.executeQuery();
-
+    
         if (resultSet.next()) {
             String employeeName = resultSet.getString("E_name");
             String employeePhone = resultSet.getString("E_phonenum");
@@ -680,6 +680,58 @@ private void contactSupplier(String branchCity) {
 
 // 6)Fetch product information based on the given Product ID
 private void showProductStock(String productID) {
+    Connection connection = null; // Initialize the connection
+    String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
+    try {
+        // Establish the database connection
+        String url = "jdbc:mysql://localhost:3306/your_database";
+        String username = "your_username";
+        String password = "your_password";
+        connection = DriverManager.getConnection(url, username, password);
+
+        // Prepare and execute the query
+        PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery);
+        preparedStatement.setString(1, productID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String P_type = resultSet.getString("P_type");
+            int P_quantity = resultSet.getInt("P_quantity");
+            String P_brand = resultSet.getString("P_brand");
+            double price = resultSet.getDouble("price");
+            String Ex_date = resultSet.getString("Ex_date");
+            String Pro_date = resultSet.getString("Pro_date");
+            String S_ID = resultSet.getString("S_ID");
+
+            // Display or use the retrieved product information as needed
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product Info:\nType: " + P_type +
+                    "\nQuantity: " + P_quantity +
+                    "\nBrand: " + P_brand +
+                    "\nPrice: " + price +
+                    "\nExpiry Date: " + Ex_date +
+                    "\nProduction Date: " + Pro_date +
+                    "\nSupplier ID: " + S_ID, "Product Information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching product information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        // Close the connection in the finally block to ensure it's always closed
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+}
+
+
+/* 
+private void showProductStock(String productID) {
     
     String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery)) {
@@ -712,7 +764,7 @@ private void showProductStock(String productID) {
     }
 }
 
-
+*/
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
