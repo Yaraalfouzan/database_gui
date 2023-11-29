@@ -91,14 +91,14 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection 
     private void initializeDatabaseConnection() {
-        String url = "jdbc:sql://localhost:3306/whatever"; // Update the URL for MySQL
+        String url = "jdbc:mysql://localhost:3306/whatever"; // Update the URL for MySQL
 
         String username = "root";
         String password = "";
     
         try {
             // Load the MariaDB JDBC driver
-            Class.forName("com.sql.cj.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             // Connect to the database
             connection = DriverManager.getConnection(url, username, password);
     
@@ -114,7 +114,7 @@ public class SQL_GUI extends JFrame {
 
 
     private void handlePositionActions(String position) {
-      // initializeDatabaseConnection();
+      //initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
 
         switch (position) {
@@ -170,7 +170,7 @@ public class SQL_GUI extends JFrame {
 
 //1)inserting a new invoice useing selcated acc id 
 private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
-    String url = "jdbc:sql://localhost:3306/whatever";
+    String url = "jdbc:mysql://localhost:3306/whatever";
     String username = "root";
     String password = "";
 
