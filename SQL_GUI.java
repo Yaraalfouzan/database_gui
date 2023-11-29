@@ -272,8 +272,7 @@ private void showStoreManagerButtons() {
 
     showStockButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            // Implement the logic to show product stock
-            // You can call the method to fetch product information based on the given Product ID here
+            
             String productID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Product ID:");
             showProductStock(productID);
         }
@@ -281,8 +280,7 @@ private void showStoreManagerButtons() {
 
     contactSupplierButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            // Implement the logic to contact the supplier
-            // You can call the method to contact the supplier based on the given branch city here
+           
             String branchCity = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Branch City:");
             contactSupplier(branchCity);
         }
@@ -290,8 +288,7 @@ private void showStoreManagerButtons() {
 
     trackEmployeesButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            // Implement the logic to track employees
-            // You can call the method to fetch employee information based on the given Employee ID here
+            
             String employeeID = JOptionPane.showInputDialog(SQL_GUI.this, "Enter Employee ID:");
             trackEmployees(employeeID);
         }
@@ -300,8 +297,8 @@ private void showStoreManagerButtons() {
     insertProductButton = new JButton("Insert New Product");
     insertProductButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            // Implement the logic to insert a new product
-            // You can call the method to add a new product here
+            
+            
             addNewProduct();
         }
     });
@@ -374,7 +371,7 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
      String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    try (Connection connection = DriverManager.getConnection(url, username, password);     //does that mean we need connect everything???
+    try (Connection connection = DriverManager.getConnection(url, username, password);    
         Statement st = connection.createStatement();
     PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
      
@@ -426,32 +423,17 @@ private void updateShift(String employeeID, String newShift) {
 
 
 
-/* 
-private void updateShift(String employeeID, String newShift) {
-   
-    String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(updateShiftQuery)) {
-        preparedStatement.setString(1, newShift);
-        preparedStatement.setString(2, employeeID);
-        int rowsUpdated = preparedStatement.executeUpdate();
 
-        if (rowsUpdated > 0) {
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found or shift not updated.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
 
-*/ 
 // 4) Fetch employee information based on the given Employee ID
 
-
-
 private void trackEmployees(String employeeID) {
+    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mysql", "root", "11111111");
+         PreparedStatement preparedStatement = conn.prepareStatement(fetchEmployeeQuery)) {
+        
+        preparedStatement.setString(1, employeeID);
     // Initialize the database connection
     initializeDatabaseConnection();
 
@@ -499,12 +481,6 @@ private void trackEmployees(String employeeID) {
 
 
 
-
-
-
-
-
-
 private void contactSupplier(String branchCity) {
     initializeDatabaseConnection();
   
@@ -521,7 +497,7 @@ private void contactSupplier(String branchCity) {
             String  S_ID = resultSet.getString("S_ID");
             String S_name = resultSet.getString("S_name");
             String S_phonenum = resultSet.getString("S_phone");
-            String S_location = resultSet.getString("S_location");//duplicate?
+            String S_location = resultSet.getString("S_location");
 
             supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
             supplierInfo.append("Name: ").append(S_name).append(", ");
@@ -530,7 +506,6 @@ private void contactSupplier(String branchCity) {
         }
 
         if (supplierInfo.length() > 0) {
-            // Display or use the retrieved supplier information as needed
             JOptionPane.showMessageDialog(SQL_GUI.this, "Suppliers for Branch in " + branchCity + ":\n" + supplierInfo.toString(), "Supplier Information", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(SQL_GUI.this, "No suppliers found for the given branch city.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -593,41 +568,7 @@ private void showProductStock(String productID) {
 }
 
 
-/* 
-private void showProductStock(String productID) {
-    
-    String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchProductQuery)) {
-        preparedStatement.setString(1, productID);
-        ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            String P_type = resultSet.getString("P_type");
-            int P_quantity = resultSet.getInt("P_quantity");
-            String P_brand = resultSet.getString("P_brand");
-            double price = resultSet.getDouble("price");
-            String Ex_date = resultSet.getString("Ex_date");
-            String Pro_date = resultSet.getString("Pro_date");
-            String S_ID= resultSet.getString("S_ID");
-
-            // Display or use the retrieved product information as needed
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Product Info:\nType: " + P_type +
-                    "\nQuantity: " + P_quantity +
-                    "\nBrand: " + P_brand +
-                    "\nPrice: " + price +
-                    "\nExpiry Date: " + Ex_date +
-                    "\nProduction Date: " + Pro_date +
-                    "\nSupplier ID: " + S_ID, "Product Information", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching product information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-
-*/ 
 // 8) Fetch employee information based on the given Employee ID
 private void showEmployeeInformation(String employeeID) {
 
@@ -698,7 +639,10 @@ private void showEmployeeInformation(String employeeID) {
             }
         });
                 }
+
 }
+
+
     
 
 
