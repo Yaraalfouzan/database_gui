@@ -9,7 +9,7 @@ public class SQL_GUI extends JFrame {
     private JLabel positionLabel, idLabel;
     private JComboBox<String> positionComboBox;
     private JTextField idTextField;
-    private JButton loginButton, generateInvoiceButton,insertProductButton, showStockButton, contactSupplierButton, trackEmployeesButton;
+    private JButton loginButton,retrievePointsButton, generateInvoiceButton,insertProductButton, showStockButton, contactSupplierButton, trackEmployeesButton;
     private JTabbedPane tabbedPane;
     private Connection connection;
     public SQL_GUI() {
@@ -30,6 +30,9 @@ public class SQL_GUI extends JFrame {
         // Buttons for Cashier
        // updatePointsButton = new JButton("Update Points");
         generateInvoiceButton = new JButton("Generate Invoice");
+        retrievePointsButton = new JButton("Retrieve Points");
+       
+        
 
         // Buttons for Store Manager
         showStockButton = new JButton("Show Product Stock");
@@ -162,8 +165,18 @@ public class SQL_GUI extends JFrame {
             generateInvoice(usernameTextField.getText(),invoiceNumber, totalPrice);
             }
         });
-    
+
+     retrievePointsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String userName = idTextField.getText();
+                int points = retrievePointsFromAccount(userName);
+                JOptionPane.showMessageDialog(SQL_GUI.this, "Points for " + userName + ": " + points, "Points Information", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         cashierPanel.add(generateInvoiceButton);
+        cashierPanel.add(generateInvoiceButton);
+        cashierPanel.add(retrievePointsButton); 
         tabbedPane.addTab("Cashier", cashierPanel);
     }
     
@@ -172,7 +185,7 @@ public class SQL_GUI extends JFrame {
 private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
     String url = "jdbc:mysql://localhost:3306/whatever";
     String username = "root";
-    String password = "";
+    String password =   null;
 
     try (Connection connection = DriverManager.getConnection(url, username, password)) {
         // Fetch customer information and points from the database
@@ -234,9 +247,15 @@ private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
 private int retrievePointsFromAccount(String customerID) {
     int points = 0;
 
+    String url = "jdbc:mysql://localhost:3306/whatever";
+    String username = "root";
+    String password = "";
+
     // Fetch customer points from the database
     String fetchPointsQuery = "SELECT points FROM ACCOUNT WHERE userName = ?";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchPointsQuery)) {
+    try (Connection connection = DriverManager.getConnection(url, username, password);
+         PreparedStatement preparedStatement = connection.prepareStatement(fetchPointsQuery)) {
+
         preparedStatement.setString(1, customerID);
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -250,6 +269,7 @@ private int retrievePointsFromAccount(String customerID) {
 
     return points;
 }
+
 
 private void showStoreManagerButtons() {
     JPanel managerPanel = new JPanel();
