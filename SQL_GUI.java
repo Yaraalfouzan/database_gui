@@ -169,52 +169,59 @@ public class SQL_GUI extends JFrame {
     
 
 //1)inserting a new invoice useing selcated acc id 
-    private void generateInvoice(String userName2,int invoiceNumber, int totalPrice) {
-    String userName = userName2; 
+private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
+    String url = "jdbc:sql://localhost:3306/whatever";
+    String username = "root";
+    String password = "";
 
-    // Fetch customer information and points from the database
-    String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
-    try (PreparedStatement preparedStatement = connection.prepareStatement(fetchCustomerQuery)) {
-       initializeDatabaseConnection(); 
-        preparedStatement.setString(1, userName);
-        ResultSet resultSet = preparedStatement.executeQuery();
+    try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        // Fetch customer information and points from the database
+        String fetchCustomerQuery = "SELECT * FROM ACCOUNT WHERE userName = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(fetchCustomerQuery)) {
+            preparedStatement.setString(1, userName);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            String Acc_phoneNum = resultSet.getString("Acc_phoneNum");
-            int points = resultSet.getInt("points");
-            //int points = retrievePointsFromAccount(userName);
+            if (resultSet.next()) {
+                int points = resultSet.getInt("points");
 
+                // Your logic to generate the invoice based on customer information
+                // Fetch the purchased items and their details from the database
+                // Update the invoice table in the database with relevant information
 
-            // Your logic to generate the invoice based on customer information
-            // Fetch the purchased items and their details from the database
-            // Update the invoice table in the database with relevant information
+                // Update customer points (considering 10 SR spent earns 1 point)
+                int pointsEarned = calculatePointsEarnedForInvoiceAmount(totalPrice);
+                int updatedPoints = points + pointsEarned;
 
-            // Update customer points (considering 10 SR spent earns 1 point)
-             // Read invoice amount from the user
-             int Totl_Price = totalPrice;
- 
-             int invoiceNum = invoiceNumber;
- 
-            int pointsEarned = calculatePointsEarnedForInvoiceAmount(Totl_Price);
-            int updatedPoints = points + pointsEarned;
+                // Update the customer's points in the database
+                String updatePointsQuery = "UPDATE ACCOUNT SET points = ? WHERE userName = ?";
+                try (PreparedStatement updatePointsStatement = connection.prepareStatement(updatePointsQuery)) {
+                    updatePointsStatement.setInt(1, updatedPoints);
+                    updatePointsStatement.setString(2, userName);
+                    updatePointsStatement.executeUpdate();
+                }
 
-            // Update the customer's points in the database
-            String updatePointsQuery = "UPDATE ACCOUNT SET points = ? WHERE userName = ?";
-            try (PreparedStatement updatePointsStatement = connection.prepareStatement(updatePointsQuery)) {
-                updatePointsStatement.setInt(1, updatedPoints);
-                updatePointsStatement.setString(2, userName);
-                updatePointsStatement.executeUpdate();
+                // Insert a new invoice into the INVOICE table
+                String insertInvoiceQuery = "INSERT INTO INVOICE (InvoiceNum, Totl_Price , Acc_userName) VALUES (?, ?, ?)";
+                try (PreparedStatement insertInvoiceStatement = connection.prepareStatement(insertInvoiceQuery)) {
+                    insertInvoiceStatement.setInt(1, invoiceNumber);
+                    insertInvoiceStatement.setInt(2, totalPrice);
+                    insertInvoiceStatement.setString(3, userName);
+                    insertInvoiceStatement.executeUpdate();
+                }
+
+                JOptionPane.showMessageDialog(SQL_GUI.this, "Invoice generated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(SQL_GUI.this, "Customer not found.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Invoice generated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(SQL_GUI.this, "Customer not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     } catch (SQLException ex) {
+        // Log the error instead of printing the stack trace
         ex.printStackTrace();
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error generating invoice: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+ 
+
 
 private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
     // Assuming 10 SR spent earns 1 point
