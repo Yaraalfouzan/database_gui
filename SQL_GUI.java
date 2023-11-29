@@ -506,6 +506,7 @@ private void trackEmployees(String employeeID) {
 
 
 private void contactSupplier(String branchCity) {
+    initializeDatabaseConnection();
   
     String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
             "JOIN Product P ON S.S_ID = P.S_ID " +
@@ -629,6 +630,8 @@ private void showProductStock(String productID) {
 */ 
 // 8) Fetch employee information based on the given Employee ID
 private void showEmployeeInformation(String employeeID) {
+
+    initializeDatabaseConnection();
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
 
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchEmployeeQuery)) {
