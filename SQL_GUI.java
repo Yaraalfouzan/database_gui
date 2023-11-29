@@ -94,14 +94,14 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection 
     private void initializeDatabaseConnection() {
-        String url = "jdbc:sql://localhost:3306/whatever"; // Update the URL for MySQL
+        String url = "jdbc:mysql://localhost:3306/whatever"; // Update the URL for MySQL
 
         String username = "root";
         String password = "";
     
         try {
             // Load the MariaDB JDBC driver
-            Class.forName("com.sql.cj.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             // Connect to the database
             connection = DriverManager.getConnection(url, username, password);
     
@@ -117,7 +117,7 @@ public class SQL_GUI extends JFrame {
 
 
     private void handlePositionActions(String position) {
-      // initializeDatabaseConnection();
+      //initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
 
         switch (position) {
@@ -183,7 +183,7 @@ public class SQL_GUI extends JFrame {
 
 //1)inserting a new invoice useing selcated acc id 
 private void generateInvoice(String userName, int invoiceNumber, int totalPrice) {
-    String url = "jdbc:sql://localhost:3306/whatever";
+    String url = "jdbc:mysql://localhost:3306/whatever";
     String username = "root";
     String password = "";
 
@@ -375,7 +375,7 @@ private void addNewProduct() {
 
 //insert 2
 private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
-     String url = "jdbc:sql://localhost:3306/whatever";
+     String url = "jdbc:mysql://localhost:3306/whatever";
      String username = "root";                         
      String password = "";
      String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
@@ -409,6 +409,32 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
 
 
 //3) Update the shift for the given Employee ID
+
+private void updateShift(String employeeID, String newShift) {
+    String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yourDatabaseName", "username", "password");
+         PreparedStatement preparedStatement = conn.prepareStatement(updateShiftQuery)) {
+        
+        preparedStatement.setString(1, newShift);
+        preparedStatement.setString(2, employeeID);
+        int rowsUpdated = preparedStatement.executeUpdate();
+
+        if (rowsUpdated > 0) {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Shift updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found or shift not updated.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+
+/* 
 private void updateShift(String employeeID, String newShift) {
    
     String updateShiftQuery = "UPDATE Employee SET E_Shift = ? WHERE E_ID = ?";
@@ -428,8 +454,69 @@ private void updateShift(String employeeID, String newShift) {
     }
 }
 
-
+*/ 
 // 4) Fetch employee information based on the given Employee ID
+
+private void trackEmployees(String employeeID) {
+    String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
+    
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/whatever", "username", "password");
+         PreparedStatement preparedStatement = conn.prepareStatement(fetchEmployeeQuery)) {
+        
+        preparedStatement.setString(1, employeeID);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String employeeName = resultSet.getString("E_name");
+            String employeePhone = resultSet.getString("E_phonenum");
+            double employeeSalary = resultSet.getDouble("E_salary");
+            String employeePosition = resultSet.getString("E_Position");
+            String employeeShift = resultSet.getString("E_Shift");
+
+            // Create a new JFrame to display employee information
+            JFrame employeeFrame = new JFrame("Employee Information");
+            employeeFrame.setSize(400, 200);
+            employeeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            employeeFrame.setLocationRelativeTo(null);
+
+            // Create a JPanel to hold the information
+            JPanel infoPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+
+            // Add labels and corresponding information
+            infoPanel.add(new JLabel("Employee ID:"));
+            infoPanel.add(new JLabel(employeeID));
+
+            infoPanel.add(new JLabel("Name:"));
+            infoPanel.add(new JLabel(employeeName));
+
+            infoPanel.add(new JLabel("Phone:"));
+            infoPanel.add(new JLabel(employeePhone));
+
+            infoPanel.add(new JLabel("Salary:"));
+            infoPanel.add(new JLabel(String.valueOf(employeeSalary)));
+
+            infoPanel.add(new JLabel("Position:"));
+            infoPanel.add(new JLabel(employeePosition));
+
+            infoPanel.add(new JLabel("Shift:"));
+            infoPanel.add(new JLabel(employeeShift));
+
+            // Add the panel to the frame
+            employeeFrame.add(infoPanel);
+
+            // Make the frame visible
+            employeeFrame.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this, "Employee not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+/* 
 private void trackEmployees(String employeeID) {
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     
@@ -485,9 +572,96 @@ private void trackEmployees(String employeeID) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching employee information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
+*/
 
 // 5)Fetch supplier information for the given branch city
+
+
+private void contactSupplier(String branchCity) {
+    String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " +
+            "JOIN Product P ON S.S_ID = P.S_ID " +
+            "JOIN Branch B ON P.B_id = B.B_id " +
+            "WHERE B.city = ?";
+    
+    String url = "jdbc:mysql://localhost:3306/your_database";
+    String username = "your_username";
+    String password = "your_password";
+
+    try (Connection connection = DriverManager.getConnection(url, username, password);
+         PreparedStatement preparedStatement = connection.prepareStatement(fetchSupplierQuery)) {
+
+        preparedStatement.setString(1, branchCity);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        StringBuilder supplierInfo = new StringBuilder();
+        while (resultSet.next()) {
+            String S_ID = resultSet.getString("S_ID");
+            String S_name = resultSet.getString("S_name");
+            String S_phonenum = resultSet.getString("S_phone");
+            String S_location = resultSet.getString("S_location");
+
+            supplierInfo.append("Supplier ID: ").append(S_ID).append(", ");
+            supplierInfo.append("Name: ").append(S_name).append(", ");
+            supplierInfo.append("Phone: ").append(S_phonenum).append(", ");
+            supplierInfo.append("Location: ").append(S_location).append("\n");
+        }
+
+        if (supplierInfo.length() > 0) {
+            JOptionPane.showMessageDialog(SQL_GUI.this,
+                    "Suppliers for Branch in " + branchCity + ":\n" + supplierInfo.toString(),
+                    "Supplier Information",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(SQL_GUI.this,
+                    "No suppliers found for the given branch city.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(SQL_GUI.this,
+                "Error fetching supplier information: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
 private void contactSupplier(String branchCity) {
   
     String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
@@ -522,7 +696,7 @@ private void contactSupplier(String branchCity) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching supplier information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
+*/
 
 // 6)Fetch product information based on the given Product ID
 private void showProductStock(String productID) {
