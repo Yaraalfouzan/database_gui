@@ -112,7 +112,7 @@ public class SQL_GUI extends JFrame {
         }
     }
 
-    
+
     private void handlePositionActions(String position) {
       // initializeDatabaseConnection();
         tabbedPane = new JTabbedPane();
@@ -215,6 +215,7 @@ public class SQL_GUI extends JFrame {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error generating invoice: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
 private int calculatePointsEarnedForInvoiceAmount(int invoiceAmount) {
     // Assuming 10 SR spent earns 1 point
     int pointsPer10SR = 1;
@@ -290,7 +291,7 @@ private void showStoreManagerButtons() {
 
     tabbedPane.addTab("Store Manager", managerPanel);
 }
-
+//????
 private void addNewProduct() {
     JTextField pIdField = new JTextField(10);
     JTextField quantityField = new JTextField(10);
