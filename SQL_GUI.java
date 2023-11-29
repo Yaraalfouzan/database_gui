@@ -96,14 +96,14 @@ public class SQL_GUI extends JFrame {
     
     //method to intialize db connection 
     private void initializeDatabaseConnection() {
-        String url = "jdbc:mariadb://localhost:3306/whatever"; // Update the URL for MySQL
+        String url = "jdbc:sql://localhost:3306/whatever"; // Update the URL for MySQL
 
         String username = "root";
         String password = "";
     
         try {
             // Load the MariaDB JDBC driver
-            Class.forName("com.mariadb.cj.jdbc.Driver");
+            Class.forName("com.sql.cj.jdbc.Driver");
             // Connect to the database
             connection = DriverManager.getConnection(url, username, password);
     
@@ -408,7 +408,7 @@ private void addNewProduct() {
 }
 
 private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
-     String url = "jdbc:mariadb://localhost:3306/whatever";
+     String url = "jdbc:sql://localhost:3306/whatever";
      String username = "root";                         
      String password = "";
      String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
