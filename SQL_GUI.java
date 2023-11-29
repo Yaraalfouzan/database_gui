@@ -12,11 +12,6 @@ public class SQL_GUI extends JFrame {
     private JButton loginButton, generateInvoiceButton,insertProductButton, showStockButton, contactSupplierButton, trackEmployeesButton;
     private JTabbedPane tabbedPane;
     private Connection connection;
-///
-///
-///
-
-
     public SQL_GUI() {
 
         // Set up the frame
@@ -31,7 +26,7 @@ public class SQL_GUI extends JFrame {
         positionComboBox = new JComboBox<>(new String[]{"Cashier", "Store Manager"});
         idTextField = new JTextField(20); // Set the size of the text field
         loginButton = new JButton("Log In");
-
+       
         // Buttons for Cashier
        // updatePointsButton = new JButton("Update Points");
         generateInvoiceButton = new JButton("Generate Invoice");
@@ -116,11 +111,7 @@ public class SQL_GUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Error connecting to the MariaDB database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
- 
-  
-    
     
     private void handlePositionActions(String position) {
       // initializeDatabaseConnection();
@@ -145,22 +136,6 @@ public class SQL_GUI extends JFrame {
         repaint();
     }
 
-
-
-//called by handlePositionActions
- /*    private void showCashierButtons() {
-        JPanel cashierPanel = new JPanel();
-        cashierPanel.setLayout(new FlowLayout());
-
-        generateInvoiceButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                generateInvoice();
-            }
-        });
-        cashierPanel.add(generateInvoiceButton);
-
-        tabbedPane.addTab("Cashier", cashierPanel);
-    }*/
     private void showCashierButtons() {
         JPanel cashierPanel = new JPanel();
         cashierPanel.setLayout(new FlowLayout());
@@ -268,7 +243,6 @@ private int retrievePointsFromAccount(String customerID) {
     return points;
 }
 
-
 private void showStoreManagerButtons() {
     JPanel managerPanel = new JPanel();
     managerPanel.setLayout(new FlowLayout());
@@ -316,43 +290,6 @@ private void showStoreManagerButtons() {
 
     tabbedPane.addTab("Store Manager", managerPanel);
 }
-/* 
-=======
-=======
-        tabbedPane.addTab("Store Manager", managerPanel);
-    }
->>>>>>> 88413e0a8073bcfff295fa8810628d43f42ea883
-
->>>>>>> 3e504c84c66b7424e428f81d4f3974e5cef8f5c7
-    //2)Insert a new product with the provided information
- private void addNewProduct(String p_id, int quantity, String p_brand, double Price,String p_type, String Ex_date, String pro_date, String SUP_id) {
-
-    
-String insertProductQuery = "INSERT INTO Product (P_id, P_quantity, P_brand, price, P_type, Ex_date, Pro_date, S_ID) " +
-"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-try (PreparedStatement preparedStatement = connection.prepareStatement(insertProductQuery)) {
-preparedStatement.setString(1,  p_id);
-preparedStatement.setInt(2, quantity);
-preparedStatement.setString(3, p_brand);
-preparedStatement.setDouble(4, Price);
-preparedStatement.setString(5, p_type);
-preparedStatement.setString(6, Ex_date);
-preparedStatement.setString(7, pro_date);
-preparedStatement.setString(8, SUP_id);
-
-int rowsInserted = preparedStatement.executeUpdate();
-
-if (rowsInserted > 0) {
-JOptionPane.showMessageDialog(SQL_GUI.this, "New product added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-} else {
-JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product.", "Error", JOptionPane.ERROR_MESSAGE);
-}
-} catch (SQLException ex) {
-ex.printStackTrace();
-JOptionPane.showMessageDialog(SQL_GUI.this, "Error adding new product: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-}
-}
-*/
 
 private void addNewProduct() {
     JTextField pIdField = new JTextField(10);
@@ -407,6 +344,8 @@ private void addNewProduct() {
     }
 }
 
+
+//insert 2
 private void insertProductIntoDatabase(String pId, int quantity, String pBrand, double price, String pType, String exDate, String proDate, String supId) {
      String url = "jdbc:sql://localhost:3306/whatever";
      String username = "root";                         
@@ -441,8 +380,6 @@ private void insertProductIntoDatabase(String pId, int quantity, String pBrand, 
 }
 
 
-
-
 //3) Update the shift for the given Employee ID
 private void updateShift(String employeeID, String newShift) {
    
@@ -462,6 +399,7 @@ private void updateShift(String employeeID, String newShift) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error updating shift: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
 
 // 4) Fetch employee information based on the given Employee ID
 private void trackEmployees(String employeeID) {
@@ -520,7 +458,8 @@ private void trackEmployees(String employeeID) {
     }
 }
 
-  // 5)Fetch supplier information for the given branch city
+
+// 5)Fetch supplier information for the given branch city
 private void contactSupplier(String branchCity) {
   
     String fetchSupplierQuery = "SELECT DISTINCT S.* FROM Supplier S " + //fetchSupplierQuery
@@ -555,6 +494,8 @@ private void contactSupplier(String branchCity) {
         JOptionPane.showMessageDialog(SQL_GUI.this, "Error fetching supplier information: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
+
 // 6)Fetch product information based on the given Product ID
 private void showProductStock(String productID) {
     
