@@ -451,14 +451,12 @@ private void updateShift(String employeeID, String newShift) {
 // 4) Fetch employee information based on the given Employee ID
 
 private void trackEmployees(String employeeID) {
-<<<<<<< HEAD
     String fetchEmployeeQuery = "SELECT * FROM Employee WHERE E_ID = ?";
     
     try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mysql", "root", "11111111");
          PreparedStatement preparedStatement = conn.prepareStatement(fetchEmployeeQuery)) {
         
         preparedStatement.setString(1, employeeID);
-=======
     // Initialize the database connection
     initializeDatabaseConnection();
 
@@ -515,7 +513,6 @@ private void contactSupplier(String branchCity) {
             "WHERE B.city = ?";
     try (PreparedStatement preparedStatement = connection.prepareStatement(fetchSupplierQuery)) {
         preparedStatement.setString(1, branchCity);
->>>>>>> eb103e563113be2f6a0fe5e952e37c68907f9ac3
         ResultSet resultSet = preparedStatement.executeQuery();
 
         StringBuilder supplierInfo = new StringBuilder();
@@ -549,9 +546,9 @@ private void showProductStock(String productID) {
     String fetchProductQuery = "SELECT * FROM Product WHERE P_id = ?";
     try {
         // Establish the database connection
-        String url = "jdbc:mysql://localhost:3306/your_database";
-        String username = "your_username";
-        String password = "your_password";
+        String url = "jdbc:mysql://localhost:3306/mysql";
+        String username = "root";
+        String password = "11111111";
         connection = DriverManager.getConnection(url, username, password);
 
         // Prepare and execute the query
